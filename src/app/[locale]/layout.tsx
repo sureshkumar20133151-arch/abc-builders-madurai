@@ -1,6 +1,5 @@
 import { Cormorant_Garamond, DM_Sans, Noto_Sans_Tamil, Noto_Serif_Tamil } from "next/font/google";
 import { LanguageProvider } from "@/i18n/LanguageContext";
-import LoadingScreen from "@/components/LoadingScreen";
 import SmoothScroll from "@/components/SmoothScroll";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -82,10 +81,7 @@ export default async function LocaleLayout({
         <LanguageProvider initialLocale={safeLocale}>
           {/* Smooth Scroll via Lenis */}
           <SmoothScroll />
-          
-          {/* Typographic Blueprint Loader Screen */}
-          <LoadingScreen />
-          
+
           {/* Fixed Top Navbar */}
           <Navbar />
           

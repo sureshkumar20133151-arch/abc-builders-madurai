@@ -8,10 +8,14 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 // Configuration for frame scrubbing
-const FRAMES_PER_VIDEO = 240;
-const STEP = 2; // load every 2nd frame (120 frames per video, 360 frames total)
-const SUBSET_SIZE = FRAMES_PER_VIDEO / STEP;
-const TOTAL_FRAMES = SUBSET_SIZE * 3;
+const VIDEO_FRAMES = {
+  1: 240,
+  2: 200,
+  3: 240
+} as const;
+
+const STEP = 2; // load every 2nd frame
+const TOTAL_FRAMES = (VIDEO_FRAMES[1] / STEP) + (VIDEO_FRAMES[2] / STEP) + (VIDEO_FRAMES[3] / STEP); // 120 + 100 + 120 = 340
 
 export default function ScrollCanvas() {
   const { locale, t } = useLanguage();
@@ -34,28 +38,28 @@ export default function ScrollCanvas() {
       loadedCount++;
       const progress = Math.round((loadedCount / TOTAL_FRAMES) * 100);
       setLoadingProgress(progress);
-      if (loadedCount === TOTAL_FRAMES) {
-        setIsLoaded(true);
-      }
     };
 
-    // Construct image URL helper
-    const getFrameUrl = (videoNum: number, frameIdx: number) => {
-      // frameIdx is 0 to SUBSET_SIZE - 1
-      const actualFrameNum = frameIdx * STEP + 1;
-      const paddedNum = actualFrameNum.toString().padStart(3, "0");
-      return `/assets/video${videoNum}/ezgif-frame-${paddedNum}.jpg`;
-    };
-
-    // Load first frame immediately for LCP
+    // Load first frame immediately for LCP and set loaded state to trigger ScrollTrigger setup
     const tempImg = new Image();
     tempImg.src = "/assets/video1/ezgif-frame-001.jpg";
+    tempImg.onload = () => {
+      setIsLoaded(true);
+    };
+    tempImg.onerror = () => {
+      setIsLoaded(true);
+    };
 
-    // Populate arrays
+    // Populate arrays dynamically based on video lengths
     for (let v = 1; v <= 3; v++) {
-      for (let i = 0; i < SUBSET_SIZE; i++) {
+      const framesCount = VIDEO_FRAMES[v as 1 | 2 | 3];
+      const subsetSize = framesCount / STEP;
+      for (let i = 0; i < subsetSize; i++) {
+        const actualFrameNum = i * STEP + 1;
+        const paddedNum = actualFrameNum.toString().padStart(3, "0");
+        const url = `/assets/video${v}/ezgif-frame-${paddedNum}.jpg`;
         const img = new Image();
-        img.src = getFrameUrl(v, i);
+        img.src = url;
         img.onload = onLoad;
         img.onerror = onLoad; // Count even on error to prevent freezing
         loadedImages.push(img);
@@ -84,8 +88,26 @@ export default function ScrollCanvas() {
 
     const drawFrame = (index: number) => {
       const idx = Math.min(Math.max(0, Math.floor(index)), TOTAL_FRAMES - 1);
-      const img = images[idx];
-      if (!img || !img.complete) return;
+      let img = images[idx];
+      if (!img || !img.complete) {
+        // Fallback to closest loaded image to avoid flicker
+        let found = false;
+        for (let offset = 1; offset < TOTAL_FRAMES; offset++) {
+          const prevIdx = idx - offset;
+          const nextIdx = idx + offset;
+          if (prevIdx >= 0 && images[prevIdx] && images[prevIdx].complete) {
+            img = images[prevIdx];
+            found = true;
+            break;
+          }
+          if (nextIdx < TOTAL_FRAMES && images[nextIdx] && images[nextIdx].complete) {
+            img = images[nextIdx];
+            found = true;
+            break;
+          }
+        }
+        if (!found) return;
+      }
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -170,23 +192,7 @@ export default function ScrollCanvas() {
 
   return (
     <div ref={containerRef} className="relative w-full h-screen bg-black overflow-hidden select-none">
-      {/* Loading overlay for assets */}
-      {!isLoaded && (
-        <div className="absolute inset-0 bg-surface-0 flex flex-col justify-center items-center z-50">
-          <div className="text-[var(--brand-teak)] font-display text-4xl italic mb-4 animate-pulse">
-            ABC Builders
-          </div>
-          <div className="w-64 h-[1px] bg-border-subtle relative overflow-hidden">
-            <div
-              className="absolute left-0 top-0 h-full bg-[var(--brand-teak)] transition-all duration-300"
-              style={{ width: `${loadingProgress}%` }}
-            />
-          </div>
-          <div className="mt-2 text-xs font-mono text-text-secondary">
-            PRELOADING RENDERS: {loadingProgress}%
-          </div>
-        </div>
-      )}
+
 
       {/* Render Canvas */}
       <canvas
