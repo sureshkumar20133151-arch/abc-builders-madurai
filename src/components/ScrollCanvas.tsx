@@ -24,10 +24,19 @@ export default function ScrollCanvas() {
   const [images, setImages] = useState<HTMLImageElement[]>([]);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [showLoader, setShowLoader] = useState(true);
   
   // Track active section for progress dots
   const [activeStep, setActiveStep] = useState(0); // 0 = Design, 1 = Build, 2 = Dream
   const [scrollProgress, setScrollProgress] = useState(0); // 0 to 100
+
+  // Unmount loader after fade out
+  useEffect(() => {
+    if (isLoaded) {
+      const timer = setTimeout(() => setShowLoader(false), 800);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoaded]);
 
   // Preload Images
   useEffect(() => {
@@ -38,17 +47,14 @@ export default function ScrollCanvas() {
       loadedCount++;
       const progress = Math.round((loadedCount / TOTAL_FRAMES) * 100);
       setLoadingProgress(progress);
+      if (loadedCount === TOTAL_FRAMES) {
+        setIsLoaded(true);
+      }
     };
 
-    // Load first frame immediately for LCP and set loaded state to trigger ScrollTrigger setup
+    // Load first frame immediately for LCP
     const tempImg = new Image();
     tempImg.src = "/assets/video1/ezgif-frame-001.jpg";
-    tempImg.onload = () => {
-      setIsLoaded(true);
-    };
-    tempImg.onerror = () => {
-      setIsLoaded(true);
-    };
 
     // Populate arrays dynamically based on video lengths
     for (let v = 1; v <= 3; v++) {
@@ -192,7 +198,31 @@ export default function ScrollCanvas() {
 
   return (
     <div ref={containerRef} className="relative w-full h-screen bg-black overflow-hidden select-none">
-
+      {/* Premium Loader overlay for assets */}
+      {showLoader && (
+        <div
+          className={`absolute inset-0 bg-brand-night flex flex-col justify-center items-center z-50 transition-opacity duration-700 ease-in-out ${
+            isLoaded ? "opacity-0 pointer-events-none" : "opacity-100"
+          }`}
+        >
+          <div className="text-brand-teak font-display text-3xl md:text-4xl italic mb-6 animate-pulse tracking-wide select-none">
+            ABC Builders
+          </div>
+          
+          {/* Progress bar container */}
+          <div className="w-64 h-[1.5px] bg-white/10 relative overflow-hidden mb-3">
+            <div
+              className="absolute left-0 top-0 h-full bg-brand-teak transition-all duration-300 ease-out"
+              style={{ width: `${loadingProgress}%` }}
+            />
+          </div>
+          
+          {/* Progress percentage text */}
+          <div className="text-[10px] font-mono text-white/50 tracking-widest uppercase">
+            Loading {loadingProgress}%
+          </div>
+        </div>
+      )}
 
       {/* Render Canvas */}
       <canvas
