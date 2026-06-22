@@ -1,7 +1,8 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import BeforeAfterSlider from "@/components/BeforeAfterSlider";
+import ThreeSixtyTour from "@/components/ThreeSixtyTour";
 import { Star, X, MapPin, Calculator, ShieldCheck, Clock, Layers } from "lucide-react";
 
 export default function ProjectsPage() {
@@ -9,6 +10,8 @@ export default function ProjectsPage() {
   const [filterType, setFilterType] = useState("all");
   const [filterDistrict, setFilterDistrict] = useState("all");
   const [selectedProject, setSelectedProject] = useState<any | null>(null);
+  const [activeTab, setActiveTab] = useState<"slider" | "360">("slider");
+  const [isDirect360, setIsDirect360] = useState(false);
 
   // Projects archive data referencing frames from our extracted video assets
   const projects = [
@@ -196,7 +199,7 @@ export default function ProjectsPage() {
               {filteredProjects.map((p) => (
                 <div
                   key={p.id}
-                  onClick={() => setSelectedProject(p)}
+                  onClick={() => { setSelectedProject(p); setActiveTab("slider"); setIsDirect360(false); }}
                   className="bg-surface-0 border border-border-subtle hover:border-brand-teak flex flex-col text-left group cursor-pointer transition-all duration-300"
                 >
                   <div className="relative aspect-[3/2] w-full overflow-hidden bg-surface-2">
@@ -222,9 +225,25 @@ export default function ProjectsPage() {
                         <span>{p.year}</span>
                       </div>
                     </div>
-                    <span className="text-xs font-semibold text-brand-teak tracking-widest uppercase flex items-center gap-1 border-b border-transparent group-hover:border-brand-teak self-start transition-all duration-300">
-                      {t.projects.viewProject}
-                    </span>
+                    <div className="flex items-center gap-3.5 mt-2 flex-wrap">
+                      <span className="text-xs font-semibold text-brand-teak tracking-widest uppercase flex items-center gap-1 border-b border-transparent group-hover:border-brand-teak self-start transition-all duration-300">
+                        {t.projects.viewProject}
+                      </span>
+                      {p.id === "hero-house" && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedProject(p);
+                            setActiveTab("360");
+                            setIsDirect360(true);
+                          }}
+                          className="text-xs font-semibold text-brand-teal hover:text-white hover:bg-brand-teal/80 border border-brand-teal/40 hover:border-transparent px-3 py-1 rounded transition-all duration-300 flex items-center gap-1.5 cursor-pointer font-ui select-none z-10"
+                        >
+                          <span className="w-1.5 h-1.5 rounded-full bg-brand-teal animate-ping" />
+                          <span>{locale === "ta" ? "விர்ச்சுவல் டூர்" : "View 360"}</span>
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -236,7 +255,9 @@ export default function ProjectsPage() {
       {/* 4. Fullscreen Modal Detail Overlay */}
       {selectedProject && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-brand-night/80 backdrop-blur-sm p-4 md:p-8 animate-[fadeIn_0.3s_ease-out]">
-          <div className="bg-surface-0 border border-brand-teak/30 w-full max-w-5xl h-full max-h-[85vh] overflow-y-auto relative flex flex-col lg:flex-row">
+          <div className={`bg-surface-0 border border-brand-teak/30 w-full ${
+            activeTab === "360" ? "max-w-7xl lg:max-w-[85vw] lg:w-[85vw] max-h-[90vh]" : "max-w-5xl max-h-[85vh]"
+          } h-full overflow-y-auto relative flex flex-col lg:flex-row transition-all duration-300`}>
             {/* Close Button */}
             <button
               onClick={() => setSelectedProject(null)}
@@ -246,24 +267,60 @@ export default function ProjectsPage() {
               <X className="w-5 h-5" />
             </button>
 
-            {/* Left: Images Compare Slider (70%) */}
-            <div className="lg:w-3/5 w-full bg-black flex items-center justify-center p-4 lg:p-0">
-              <div className="w-full">
-                <div className="p-4 border-b border-white/10 select-none">
-                  <h4 className="font-display text-white text-base font-semibold">{t.projects.sliderTitle}</h4>
-                  <p className="font-ui text-[10px] text-white/50">{t.projects.sliderDesc}</p>
+            {/* Left: Interactive Media Panel (Comparison Slider & 360° Virtual Tour) */}
+            <div className={`w-full bg-black flex flex-col justify-start p-0 transition-all duration-300 ${
+              activeTab === "360" ? "lg:w-full h-full" : "lg:w-3/5"
+            }`}>
+              {selectedProject.id === "hero-house" ? (
+                <div className="flex bg-[#111] border-b border-white/10 p-1.5 select-none shrink-0">
+                  <button
+                    onClick={() => setActiveTab("slider")}
+                    className={`flex-1 text-center py-2.5 text-[10px] md:text-xs uppercase tracking-widest font-semibold transition-all rounded-lg cursor-pointer ${
+                      activeTab === "slider"
+                        ? "bg-brand-teak text-white shadow-md"
+                        : "text-white/60 hover:text-white hover:bg-white/5"
+                    }`}
+                  >
+                    {locale === "ta" ? "வடிவமைப்பு vs நிஜம்" : "Visualisation vs Reality"}
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("360")}
+                    className={`flex-1 text-center py-2.5 text-[10px] md:text-xs uppercase tracking-widest font-semibold transition-all rounded-lg cursor-pointer flex items-center justify-center gap-1.5 ${
+                      activeTab === "360"
+                        ? "bg-brand-teak text-white shadow-md"
+                        : "text-brand-teak hover:bg-brand-teak/10 border border-brand-teak/30"
+                    }`}
+                  >
+                    <span className="w-2 h-2 rounded-full bg-brand-teal animate-ping" />
+                    <span>{locale === "ta" ? "360° விர்ச்சுவல் டூர்" : "360° Virtual Tour"}</span>
+                  </button>
                 </div>
-                <BeforeAfterSlider
-                  beforeImg={selectedProject.beforeImg}
-                  afterImg={selectedProject.img}
-                  beforeLabel="Structure Still"
-                  afterLabel="Finished Elev"
-                />
-              </div>
+              ) : null}
+
+              {selectedProject.id === "hero-house" && activeTab === "360" ? (
+                <div className="flex-1 w-full bg-brand-charcoal overflow-hidden min-h-[400px] lg:min-h-0">
+                  <ThreeSixtyTour />
+                </div>
+              ) : (
+                <div className="w-full flex-1 flex flex-col justify-center">
+                  <div className="p-4 border-b border-white/10 select-none">
+                    <h4 className="font-display text-white text-base font-semibold">{t.projects.sliderTitle}</h4>
+                    <p className="font-ui text-[10px] text-white/50">{t.projects.sliderDesc}</p>
+                  </div>
+                  <BeforeAfterSlider
+                    beforeImg={selectedProject.beforeImg}
+                    afterImg={selectedProject.img}
+                    beforeLabel="Structure Still"
+                    afterLabel="Finished Elev"
+                  />
+                </div>
+              )}
             </div>
 
             {/* Right: Technical Project Details (40%) */}
-            <div className="lg:w-2/5 w-full p-8 flex flex-col justify-between bg-surface-1 border-l border-border-subtle text-left">
+            <div className={`w-full p-8 flex flex-col justify-between bg-surface-1 border-l border-border-subtle text-left transition-all duration-300 ${
+              activeTab === "360" ? "hidden" : "lg:w-2/5"
+            }`}>
               <div>
                 <span className="text-brand-teak font-mono text-[9px] uppercase tracking-widest mb-1 block">
                   {selectedProject.badge} · {selectedProject.year}
