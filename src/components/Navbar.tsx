@@ -70,125 +70,127 @@ export default function Navbar() {
   const useWhiteText = theme === "night" || (!scrolled && isDarkHeroPage);
 
   return (
-    <nav
-      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
-        scrolled
-          ? "bg-surface-0/80 backdrop-blur-md border-b border-border-subtle py-3"
-          : "bg-transparent py-5"
-      }`}
-    >
-      <div className="max-w-7xl mx-auto px-6 md:px-12 flex justify-between items-center">
-        {/* Brand Logo */}
-        <Link href={`/${locale}`} className="flex flex-col select-none group">
-          <span className="font-display text-2xl font-medium tracking-tight text-brand-teak group-hover:text-brand-teal transition-colors">
-            ABC
-          </span>
-          <span className={`font-ui text-[8px] font-medium tracking-[0.25em] uppercase transition-colors ${
-            useWhiteText ? "text-white/60" : "text-text-secondary"
-          }`}>
-            BUILDERS · MADURAI
-          </span>
-        </Link>
+    <>
+      <nav
+        className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
+          scrolled
+            ? "bg-surface-0/80 backdrop-blur-md border-b border-border-subtle py-3"
+            : "bg-transparent py-5"
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-6 md:px-12 flex justify-between items-center">
+          {/* Brand Logo */}
+          <Link href={`/${locale}`} className="flex flex-col select-none group">
+            <span className="font-display text-2xl font-medium tracking-tight text-brand-teak group-hover:text-brand-teal transition-colors">
+              ABC
+            </span>
+            <span className={`font-ui text-[8px] font-medium tracking-[0.25em] uppercase transition-colors ${
+              useWhiteText ? "text-white/60" : "text-text-secondary"
+            }`}>
+              BUILDERS · MADURAI
+            </span>
+          </Link>
 
-        {/* Desktop Navigation Links */}
-        <div className="hidden lg:flex items-center gap-8">
-          {navLinks.map((link) => (
-            <Link
-              key={link.name}
-              href={link.href}
-              className={`font-ui text-xs tracking-wider uppercase transition-colors ${
-                isActive(link.href)
-                  ? "text-brand-teak font-semibold"
-                  : "text-brand-teak/80 hover:text-brand-teak"
-              }`}
-            >
-              {link.name}
-            </Link>
-          ))}
-        </div>
-
-        {/* Action Controls & CTA */}
-        <div className="hidden lg:flex items-center gap-6">
-          {/* i18n switcher */}
-          <div className={`flex items-center gap-2 border rounded-full px-3 py-1 text-xs transition-colors ${
-            useWhiteText ? "border-white/20 text-white" : "border-border-subtle"
-          }`}>
-            <Globe className="w-3.5 h-3.5 text-brand-teak" />
-            <button
-              onClick={() => switchLanguage("en")}
-              className={`hover:text-brand-teak transition-colors ${
-                locale === "en" ? "font-bold text-brand-teak" : useWhiteText ? "text-white/60" : "text-text-secondary"
-              }`}
-            >
-              EN
-            </button>
-            <span className={useWhiteText ? "text-white/20" : "text-border-medium"}>|</span>
-            <button
-              onClick={() => switchLanguage("ta")}
-              className={`hover:text-brand-teak transition-colors ${
-                locale === "ta" ? "font-bold text-brand-teak" : useWhiteText ? "text-white/60" : "text-text-secondary"
-              }`}
-            >
-              தமிழ்
-            </button>
+          {/* Desktop Navigation Links */}
+          <div className="hidden lg:flex items-center gap-8">
+            {navLinks.map((link) => (
+              <Link
+                key={link.name}
+                href={link.href}
+                className={`font-ui text-xs tracking-wider uppercase transition-colors ${
+                  isActive(link.href)
+                    ? "text-brand-teak font-semibold"
+                    : "text-brand-teak/80 hover:text-brand-teak"
+                }`}
+              >
+                {link.name}
+              </Link>
+            ))}
           </div>
 
-          {/* Theme switcher */}
-          <button
-            onClick={toggleTheme}
-            className={`p-2 border rounded-full transition-all ${
-              useWhiteText
-                ? "border-white/20 hover:bg-white/10"
-                : "border-border-subtle hover:bg-surface-2"
-            }`}
-            aria-label="Toggle Theme"
-          >
-            {theme === "light" ? (
-              <Moon className={`w-4 h-4 transition-colors ${useWhiteText ? "text-white" : "text-brand-teak"}`} />
-            ) : (
-              <Sun className="w-4 h-4 text-night-glow" />
-            )}
-          </button>
+          {/* Action Controls & CTA */}
+          <div className="hidden lg:flex items-center gap-6">
+            {/* i18n switcher */}
+            <div className={`flex items-center gap-2 border rounded-full px-3 py-1 text-xs transition-colors ${
+              useWhiteText ? "border-white/20 text-white" : "border-border-subtle"
+            }`}>
+              <Globe className="w-3.5 h-3.5 text-brand-teak" />
+              <button
+                onClick={() => switchLanguage("en")}
+                className={`hover:text-brand-teak transition-colors ${
+                  locale === "en" ? "font-bold text-brand-teak" : useWhiteText ? "text-white/60" : "text-text-secondary"
+                }`}
+              >
+                EN
+              </button>
+              <span className={useWhiteText ? "text-white/20" : "text-border-medium"}>|</span>
+              <button
+                onClick={() => switchLanguage("ta")}
+                className={`hover:text-brand-teak transition-colors ${
+                  locale === "ta" ? "font-bold text-brand-teak" : useWhiteText ? "text-white/60" : "text-text-secondary"
+                }`}
+              >
+                தமிழ்
+              </button>
+            </div>
 
-          {/* CTA Quote button */}
-          <Link
-            href={`/${locale}/contact`}
-            className="bg-brand-teak hover:bg-brand-teal text-surface-0 px-5 py-2 text-xs uppercase tracking-widest font-semibold transition-all duration-300 border border-transparent"
-          >
-            {t.nav.getEstimate}
-          </Link>
+            {/* Theme switcher */}
+            <button
+              onClick={toggleTheme}
+              className={`p-2 border rounded-full transition-all ${
+                useWhiteText
+                  ? "border-white/20 hover:bg-white/10"
+                  : "border-border-subtle hover:bg-surface-2"
+              }`}
+              aria-label="Toggle Theme"
+            >
+              {theme === "light" ? (
+                <Moon className={`w-4 h-4 transition-colors ${useWhiteText ? "text-white" : "text-brand-teak"}`} />
+              ) : (
+                <Sun className="w-4 h-4 text-night-glow" />
+              )}
+            </button>
+
+            {/* CTA Quote button */}
+            <Link
+              href={`/${locale}/contact`}
+              className="bg-brand-teak hover:bg-brand-teal text-surface-0 px-5 py-2 text-xs uppercase tracking-widest font-semibold transition-all duration-300 border border-transparent"
+            >
+              {t.nav.getEstimate}
+            </Link>
+          </div>
+
+          {/* Mobile controls */}
+          <div className="flex lg:hidden items-center gap-4">
+            <button
+              onClick={toggleTheme}
+              className={`p-1.5 border rounded-full transition-colors ${
+                useWhiteText ? "border-white/20" : "border-border-subtle"
+              }`}
+              aria-label="Toggle Theme"
+            >
+              {theme === "light" ? (
+                <Moon className={`w-4 h-4 transition-colors ${useWhiteText ? "text-white" : "text-brand-teak"}`} />
+              ) : (
+                <Sun className="w-4 h-4 text-night-glow" />
+              )}
+            </button>
+
+            <button
+              onClick={() => setMobileOpen(!mobileOpen)}
+              className={`p-1.5 border rounded-full transition-colors ${
+                useWhiteText ? "border-white/20 text-white" : "border-border-subtle text-text-primary"
+              }`}
+            >
+              {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+          </div>
         </div>
-
-        {/* Mobile controls */}
-        <div className="flex lg:hidden items-center gap-4">
-          <button
-            onClick={toggleTheme}
-            className={`p-1.5 border rounded-full transition-colors ${
-              useWhiteText ? "border-white/20" : "border-border-subtle"
-            }`}
-            aria-label="Toggle Theme"
-          >
-            {theme === "light" ? (
-              <Moon className={`w-4 h-4 transition-colors ${useWhiteText ? "text-white" : "text-brand-teak"}`} />
-            ) : (
-              <Sun className="w-4 h-4 text-night-glow" />
-            )}
-          </button>
-
-          <button
-            onClick={() => setMobileOpen(!mobileOpen)}
-            className={`p-1.5 border rounded-full transition-colors ${
-              useWhiteText ? "border-white/20 text-white" : "border-border-subtle text-text-primary"
-            }`}
-          >
-            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
-        </div>
-      </div>
+      </nav>
 
       {/* Mobile Menu Drawer Overlay */}
       {mobileOpen && (
-        <div className="fixed inset-0 top-[60px] bg-surface-0 z-30 flex flex-col p-8 lg:hidden border-t border-border-subtle">
+        <div className="fixed inset-0 bg-surface-0 z-30 flex flex-col p-8 pt-24 lg:hidden">
           <div className="flex flex-col gap-6 my-6">
             {navLinks.map((link) => (
               <Link
@@ -242,6 +244,6 @@ export default function Navbar() {
           </div>
         </div>
       )}
-    </nav>
+    </>
   );
 }
