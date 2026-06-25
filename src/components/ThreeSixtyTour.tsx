@@ -404,8 +404,8 @@ export default function ThreeSixtyTour() {
         }
       `}</style>
 
-      {/* Sidebar - Room Navigator (Width: 260px) */}
-      <div className="w-full md:w-[260px] bg-brand-night border-b md:border-b-0 md:border-r border-brand-teak/20 flex flex-col h-[200px] md:h-full z-10 shrink-0">
+      {/* Sidebar - Room Navigator (Width: 260px) - Hidden on mobile */}
+      <div className="hidden md:flex w-[260px] bg-brand-night border-r border-brand-teak/20 flex-col h-full z-10 shrink-0">
         <div className="p-4 border-b border-brand-teak/10 shrink-0">
           <h4 className="font-display font-medium text-brand-teak text-base tracking-wide flex items-center gap-2">
             <span>{locale === "ta" ? "360° விர்ச்சுவல் டூர்" : "360° Virtual Tour"}</span>
@@ -465,6 +465,30 @@ export default function ThreeSixtyTour() {
 
       {/* Main Panoramic Viewer Canvas (Flex-1) */}
       <div className="flex-1 h-full relative bg-black flex items-center justify-center">
+        {/* Mobile Room Selector Dropdown */}
+        <div className="absolute top-4 left-4 z-20 md:hidden bg-brand-night/95 border border-brand-teak/30 rounded-lg px-3 py-2 shadow-lg backdrop-blur-md max-w-[200px]">
+          <select
+            value={activeRoomId}
+            onChange={(e) => handleRoomChange(e.target.value)}
+            className="bg-transparent text-white text-xs outline-none font-semibold cursor-pointer w-full pr-2"
+          >
+            <optgroup label={locale === "ta" ? "தரைத்தளம்" : "Ground Floor"} className="bg-brand-night text-brand-teak">
+              {rooms.filter(r => r.floor === "Ground Floor").map((room) => (
+                <option key={room.id} value={room.id} className="bg-brand-night text-white text-xs">
+                  {room.name}
+                </option>
+              ))}
+            </optgroup>
+            <optgroup label={locale === "ta" ? "முதல் தளம்" : "First Floor"} className="bg-brand-night text-brand-teak">
+              {rooms.filter(r => r.floor === "First Floor").map((room) => (
+                <option key={room.id} value={room.id} className="bg-brand-night text-white text-xs">
+                  {room.name}
+                </option>
+              ))}
+            </optgroup>
+          </select>
+        </div>
+
         {!pannellumReady && (
           <div className="absolute inset-0 bg-brand-charcoal/80 flex flex-col justify-center items-center gap-3 select-none">
             <span className="w-8 h-8 rounded-full border-2 border-brand-teak border-t-transparent animate-spin" />

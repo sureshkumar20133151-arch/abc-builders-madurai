@@ -257,8 +257,8 @@ export default function ProjectsPage() {
       {selectedProject && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-brand-night/80 backdrop-blur-sm p-4 md:p-8 animate-[fadeIn_0.3s_ease-out]">
           <div className={`bg-surface-0 border border-brand-teak/30 w-full ${
-            activeTab === "360" ? "max-w-7xl lg:max-w-[85vw] lg:w-[85vw] max-h-[90vh]" : "max-w-5xl max-h-[85vh]"
-          } h-full overflow-y-auto relative flex flex-col lg:flex-row transition-all duration-300`}>
+            activeTab === "360" ? "max-w-7xl lg:max-w-[85vw] lg:w-[85vw] max-h-[90vh] overflow-hidden" : "max-w-5xl max-h-[85vh] overflow-y-auto"
+          } h-full relative flex flex-col lg:flex-row transition-all duration-300`}>
             {/* Close Button */}
             <button
               onClick={() => setSelectedProject(null)}

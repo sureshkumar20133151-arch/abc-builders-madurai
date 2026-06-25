@@ -367,8 +367,8 @@ export default function SupabaseThreeSixtyTour({ token }: SupabaseThreeSixtyTour
         }
       `}</style>
 
-      {/* Sidebar - Room Navigator (Width: 260px) */}
-      <div className="w-full md:w-[260px] bg-brand-night border-b md:border-b-0 md:border-r border-brand-teak/20 flex flex-col h-[200px] md:h-full z-10 shrink-0">
+      {/* Sidebar - Room Navigator (Width: 260px) - Hidden on mobile */}
+      <div className="hidden md:flex w-[260px] bg-brand-night border-r border-brand-teak/20 flex-col h-full z-10 shrink-0">
         <div className="p-4 border-b border-brand-teak/10 shrink-0">
           <h4 className="font-display font-medium text-brand-teak text-base tracking-wide flex items-center gap-2">
             <span>{locale === "ta" ? "360° விர்ச்சுவல் டூர்" : "360° Virtual Tour"}</span>
@@ -442,6 +442,32 @@ export default function SupabaseThreeSixtyTour({ token }: SupabaseThreeSixtyTour
 
       {/* Main Panoramic Viewer Canvas (Flex-1) */}
       <div className="flex-1 h-full relative bg-black flex items-center justify-center">
+        {/* Mobile Room Selector Dropdown */}
+        <div className="absolute top-4 left-4 z-20 md:hidden bg-brand-night/95 border border-brand-teak/30 rounded-lg px-3 py-2 shadow-lg backdrop-blur-md max-w-[200px]">
+          <select
+            value={activeRoomId || ""}
+            onChange={(e) => {
+              const target = rooms.find(r => r.id === e.target.value);
+              if (target) handleRoomChange(target);
+            }}
+            className="bg-transparent text-white text-xs outline-none font-semibold cursor-pointer w-full pr-2"
+          >
+            {(["Ground Floor", "First Floor", "Top Floor"] as const).map((floor) => {
+              const roomsInFloor = rooms.filter(r => r.floor === floor);
+              if (roomsInFloor.length === 0) return null;
+              return (
+                <optgroup key={floor} label={floor === "Ground Floor" ? (locale === "ta" ? "தரைத்தளம்" : "Ground Floor") : floor === "First Floor" ? (locale === "ta" ? "முதல் தளம்" : "First Floor") : (locale === "ta" ? "மேல்தளம்" : "Top Floor")} className="bg-brand-night text-brand-teak">
+                  {roomsInFloor.map((room) => (
+                    <option key={room.id} value={room.id} disabled={!room.photo_url} className="bg-brand-night text-white text-xs">
+                      {room.room_name.replace("Ground Floor - ", "").replace("First Floor - ", "")} {!room.photo_url ? (locale === "ta" ? "(படம் இல்லை)" : "(No Photo)") : ""}
+                    </option>
+                  ))}
+                </optgroup>
+              );
+            })}
+          </select>
+        </div>
+
         {!pannellumReady && (
           <div className="absolute inset-0 bg-brand-charcoal/80 flex flex-col justify-center items-center gap-3 select-none text-center">
             <span className="w-8 h-8 rounded-full border-2 border-brand-teak border-t-transparent animate-spin" />
