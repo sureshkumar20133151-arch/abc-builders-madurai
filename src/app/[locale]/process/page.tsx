@@ -128,9 +128,9 @@ export default function ProcessPage() {
                   <span className="text-text-tertiary font-mono text-[10px] tracking-wider uppercase block mb-1">
                     Duration: {phaseData?.duration}
                   </span>
-                  <h3 className="font-display text-2xl md:text-3xl font-semibold text-text-primary mb-6">
+                  <h2 className="font-display text-2xl md:text-3xl font-semibold text-text-primary mb-6">
                     {phaseData?.name}
-                  </h3>
+                  </h2>
                   <p className="font-ui text-xs md:text-sm text-text-secondary leading-relaxed mb-6">
                     {phaseData?.desc}
                   </p>
@@ -196,15 +196,15 @@ export default function ProcessPage() {
               {/* RERA and approvals cards */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="bg-surface-0 p-6 border border-border-subtle">
-                  <h4 className="font-display font-semibold text-base mb-2">CMDA</h4>
+                  <h3 className="font-display font-semibold text-base mb-2">CMDA</h3>
                   <span className="font-ui text-[10px] text-text-secondary">Chennai Metropolitan Area rules, strict high-density stilt allocations.</span>
                 </div>
                 <div className="bg-surface-0 p-6 border border-border-subtle">
-                  <h4 className="font-display font-semibold text-base mb-2">DTCP</h4>
+                  <h3 className="font-display font-semibold text-base mb-2">DTCP</h3>
                   <span className="font-ui text-[10px] text-text-secondary">Panchayat layouts outside Chennai. LP registration is mandatory.</span>
                 </div>
                 <div className="bg-surface-0 p-6 border border-border-subtle">
-                  <h4 className="font-display font-semibold text-base mb-2">Corporation</h4>
+                  <h3 className="font-display font-semibold text-base mb-2">Corporation</h3>
                   <span className="font-ui text-[10px] text-text-secondary">Madurai / Trichy urban licensing, water connection audits.</span>
                 </div>
               </div>
@@ -295,9 +295,9 @@ export default function ProcessPage() {
             {/* Right Column: Vastu simulated overlay upload */}
             <div className="lg:col-span-5 bg-white/80 border border-[var(--bp-ink)]/20 p-8 text-center">
               <Compass className="w-12 h-12 text-brand-teak mx-auto mb-4 animate-[spin_20s_linear_infinite]" />
-              <h4 className="font-display font-semibold text-lg text-[var(--bp-ink)] mb-2">
+              <h3 className="font-display font-semibold text-lg text-[var(--bp-ink)] mb-2">
                 Simulate Vastu Grid Overlay
-              </h4>
+              </h3>
               <p className="font-ui text-[11px] text-text-secondary mb-6">
                 Upload your blueprint draft to inspect room alignments locally. Stored client-side only.
               </p>

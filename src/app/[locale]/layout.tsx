@@ -46,17 +46,19 @@ export async function generateMetadata({
   const isTa = locale === "ta";
   return {
     title: isTa
-      ? "ஏபிசி பில்டர்ஸ், மதுரை — வரைபடம் முதல் நிஜம் வரை"
-      : "ABC Builders, Madurai — From Blueprint to Reality",
+      ? "ஏபிசி பில்டர்ஸ் மதுரை | சிறந்த கட்டுமான நிறுவனம் | வீடுகள் & வணிக வளாகங்கள்"
+      : "ABC Builders Madurai | Premier Construction & Design Company",
     description: isTa
-      ? "தமிழ்நாட்டின் முன்னணி கட்டுமான நிறுவனம். வீடுகள், வில்லாக்கள் மற்றும் வணிகக் கட்டிடங்களை வாஸ்து முறைப்படி தரமாக கட்டித் தருகிறோம்."
-      : "Tamil Nadu's premier construction company. Building high-end contemporary bungalows, houses, and commercial spaces since 2013.",
+      ? "மதுரையில் 12+ ஆண்டுகள் அனுபவத்துடன் 250+ வீடுகள், வில்லாக்கள் மற்றும் வணிகக் கட்டிடங்களை வாஸ்து முறைப்படி தரமாக கட்டித் தரும் முன்னணி கட்டுமான நிறுவனம்."
+      : "Leading construction company in Madurai with 12+ years of experience and 250+ completed high-end residential bungalows, villas, and commercial complexes.",
     metadataBase: new URL("https://abcbuildersmadurai.com"),
     openGraph: {
-      title: isTa ? "ஏபிசி பில்டர்ஸ், மதுரை" : "ABC Builders, Madurai",
+      title: isTa
+        ? "ஏபிசி பில்டர்ஸ் மதுரை | சிறந்த கட்டுமான நிறுவனம்"
+        : "ABC Builders Madurai | Premier Construction Company",
       description: isTa
-        ? "தமிழ்நாட்டின் முன்னணி கட்டுமான நிறுவனம்."
-        : "Tamil Nadu's premier construction company.",
+        ? "வாஸ்து முறைப்படி தரமான வீடுகளைக் கட்டித் தரும் மதுரை முன்னணி கட்டுமான நிறுவனம்."
+        : "Leading construction company in Madurai with 12+ years experience.",
       type: "website",
     },
   };
@@ -72,12 +74,62 @@ export default async function LocaleLayout({
   const { locale } = await params;
   const safeLocale = (locale === "ta" ? "ta" : "en") as Locale;
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "ABC Builders Madurai",
+    "image": "https://abcbuildersmadurai.com/assets/video3/ezgif-frame-140.jpg",
+    "@id": "https://abcbuildersmadurai.com/#localbusiness",
+    "url": "https://abcbuildersmadurai.com",
+    "telephone": "+919876543210",
+    "priceRange": "$$$",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "82, Wooden Desk Road, Tallakulam",
+      "addressLocality": "Madurai",
+      "addressRegion": "Tamil Nadu",
+      "postalCode": "625002",
+      "addressCountry": "IN"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 9.9392,
+      "longitude": 78.1382
+    },
+    "openingHoursSpecification": {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday"
+      ],
+      "opens": "08:00",
+      "closes": "20:00"
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.8",
+      "reviewCount": "120",
+      "bestRating": "5",
+      "worstRating": "1"
+    }
+  };
+
   return (
     <html
       lang={safeLocale}
       className={`${cormorant.variable} ${dmSans.variable} ${notoTamilSans.variable} ${notoTamilSerif.variable} h-full antialiased`}
     >
       <body className="font-ui min-h-full flex flex-col relative bg-surface-0 text-text-primary">
+        {/* LocalBusiness Structured Data JSON-LD */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+
         <LanguageProvider initialLocale={safeLocale}>
           {/* Smooth Scroll via Lenis */}
           <SmoothScroll />

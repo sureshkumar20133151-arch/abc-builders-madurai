@@ -117,9 +117,9 @@ export default function ContactPage() {
             
             {/* Left: Smart Enquiry Form Card (55%) */}
             <div id="enquiry-form-card" className="lg:col-span-7 bg-surface-0 border border-brand-teak/20 p-8 md:p-10 select-none text-left shadow-sm">
-              <h3 className="font-display text-2xl font-semibold text-text-primary mb-2">
+              <h2 className="font-display text-2xl font-semibold text-text-primary mb-2">
                 {t.contact.formTitle}
-              </h3>
+              </h2>
               <p className="font-ui text-xs text-text-secondary mb-8">
                 {t.contact.formSub}
               </p>
@@ -326,7 +326,7 @@ export default function ContactPage() {
               {/* HQ Card */}
               <div className="bg-surface-0 border border-border-subtle p-6 flex flex-col gap-4">
                 <div className="flex justify-between items-start border-b border-border-subtle pb-2">
-                  <h4 className="font-display font-semibold text-base text-brand-teak">Madurai HQ Office</h4>
+                  <h3 className="font-display font-semibold text-base text-brand-teak">Madurai HQ Office</h3>
                   <span className="font-mono text-[9px] text-text-tertiary">Main Branch</span>
                 </div>
                 <div className="flex flex-col gap-2 font-ui text-xs text-text-secondary leading-relaxed">
@@ -348,7 +348,7 @@ export default function ContactPage() {
               {/* Branch 2 */}
               <div className="bg-surface-0 border border-border-subtle p-6 flex flex-col gap-4">
                 <div className="flex justify-between items-start border-b border-border-subtle pb-2">
-                  <h4 className="font-display font-semibold text-base text-text-primary">Chennai Branch</h4>
+                  <h3 className="font-display font-semibold text-base text-text-primary">Chennai Branch</h3>
                   <span className="font-mono text-[9px] text-text-tertiary">Northern Hub</span>
                 </div>
                 <div className="flex flex-col gap-2 font-ui text-xs text-text-secondary leading-relaxed">
@@ -366,7 +366,7 @@ export default function ContactPage() {
               {/* Branch 3 */}
               <div className="bg-surface-0 border border-border-subtle p-6 flex flex-col gap-4">
                 <div className="flex justify-between items-start border-b border-border-subtle pb-2">
-                  <h4 className="font-display font-semibold text-base text-text-primary">Trichy Branch</h4>
+                  <h3 className="font-display font-semibold text-base text-text-primary">Trichy Branch</h3>
                   <span className="font-mono text-[9px] text-text-tertiary">Central Hub</span>
                 </div>
                 <div className="flex flex-col gap-2 font-ui text-xs text-text-secondary leading-relaxed">

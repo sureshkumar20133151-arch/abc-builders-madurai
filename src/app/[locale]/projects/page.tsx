@@ -215,9 +215,9 @@ export default function ProjectsPage() {
                   </div>
                   <div className="p-6 flex flex-col justify-between flex-1">
                     <div>
-                      <h4 className="font-display text-lg font-semibold text-text-primary mb-1 group-hover:text-brand-teak transition-colors">
+                      <h2 className="font-display text-lg font-semibold text-text-primary mb-1 group-hover:text-brand-teak transition-colors">
                         {p.title}
-                      </h4>
+                      </h2>
                       <div className="flex gap-2 text-[10px] text-text-tertiary uppercase font-mono tracking-wider mb-4">
                         <span>{p.location}</span>
                         <span>•</span>
@@ -330,9 +330,9 @@ export default function ProjectsPage() {
                 <span className="text-brand-teak font-mono text-[9px] uppercase tracking-widest mb-1 block">
                   {selectedProject.badge} · {selectedProject.year}
                 </span>
-                <h3 className="font-display text-2xl md:text-3xl font-semibold text-text-primary mb-6">
+                <h2 className="font-display text-2xl md:text-3xl font-semibold text-text-primary mb-6">
                   {selectedProject.title}
-                </h3>
+                </h2>
 
                 <p className="font-ui text-xs text-text-secondary leading-relaxed mb-6">
                   {selectedProject.desc}

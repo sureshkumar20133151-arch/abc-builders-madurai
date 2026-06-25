@@ -282,9 +282,9 @@ Recommendation: For outer walls, wire-cut clay red bricks are premium. For inter
                       <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {art.date}</span>
                       <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {art.readTime}</span>
                     </div>
-                    <h4 className="font-display text-base md:text-lg font-semibold text-text-primary mb-3 group-hover:text-brand-teak transition-colors line-clamp-2">
+                    <h2 className="font-display text-base md:text-lg font-semibold text-text-primary mb-3 group-hover:text-brand-teak transition-colors line-clamp-2">
                       {art.title[locale]}
-                    </h4>
+                    </h2>
                     <p className="font-ui text-xs text-text-secondary leading-relaxed line-clamp-3 mb-6">
                       {art.excerpt[locale]}
                     </p>
@@ -328,9 +328,9 @@ Recommendation: For outer walls, wire-cut clay red bricks are premium. For inter
             <span className="text-brand-teak font-mono text-[9px] uppercase tracking-widest mb-1 block select-none">
               {activeArticle.catLabel[locale]} · {activeArticle.readTime}
             </span>
-            <h3 className="font-display text-2xl md:text-4xl font-semibold text-text-primary mb-6 leading-tight">
+            <h2 className="font-display text-2xl md:text-4xl font-semibold text-text-primary mb-6 leading-tight">
               {activeArticle.title[locale]}
-            </h3>
+            </h2>
 
             <div className="relative aspect-video w-full overflow-hidden bg-surface-2 mb-8 select-none">
               <img src={activeArticle.cover} alt={activeArticle.title[locale]} className="w-full h-full object-cover" />
@@ -363,9 +363,9 @@ Recommendation: For outer walls, wire-cut clay red bricks are premium. For inter
         <div className="max-w-4xl mx-auto px-6 text-center select-none">
           <div className="max-w-xl mx-auto flex flex-col items-center gap-6">
             <PhoneCall className="w-12 h-12 text-brand-teak animate-bounce" />
-            <h3 className="font-display text-2xl md:text-4xl font-medium tracking-tight">
+            <h2 className="font-display text-2xl md:text-4xl font-medium tracking-tight">
               {t.blog.subTitle}
-            </h3>
+            </h2>
             <p className="font-ui text-xs text-white/60 leading-relaxed max-w-sm">
               Subscribe to get structural specifications checklists, vastu rules overlays, and price index guides once a week directly in WhatsApp.
             </p>

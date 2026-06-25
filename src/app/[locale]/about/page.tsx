@@ -80,9 +80,9 @@ export default function AboutPage() {
               <span className="text-brand-teak font-mono text-xs uppercase tracking-widest mb-2 block">
                 Founders
               </span>
-              <h3 className="font-display text-3xl md:text-4xl font-medium tracking-tight text-text-primary mb-6">
+              <h2 className="font-display text-3xl md:text-4xl font-medium tracking-tight text-text-primary mb-6">
                 {t.about.storyTitle}
-              </h3>
+              </h2>
               <p className="font-ui text-sm text-text-secondary leading-relaxed mb-6">
                 {t.about.storyText1}
               </p>

@@ -288,9 +288,9 @@ Please contact me for site verification.`;
                     <div className="w-12 h-12 bg-surface-1 rounded-lg flex items-center justify-center border border-brand-teak/20 mb-6">
                       <Icon className="w-6 h-6 text-brand-teak" />
                     </div>
-                    <h3 className="font-display text-xl font-semibold text-text-primary mb-4">
+                    <h2 className="font-display text-xl font-semibold text-text-primary mb-4">
                       {service.title}
-                    </h3>
+                    </h2>
                     <p className="font-ui text-xs text-text-secondary leading-relaxed mb-6">
                       {service.desc}
                     </p>

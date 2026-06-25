@@ -95,9 +95,9 @@ export default function AboutTimeline() {
                 <span className="font-display text-3xl font-bold text-brand-teak mb-2 block">
                   {m.year}
                 </span>
-                <h4 className="font-display text-lg font-semibold tracking-tight mb-2">
+                <h3 className="font-display text-lg font-semibold tracking-tight mb-2">
                   {milestoneData?.title}
-                </h4>
+                </h3>
                 <p className="font-ui text-xs leading-relaxed opacity-85">
                   {milestoneData?.desc}
                 </p>
