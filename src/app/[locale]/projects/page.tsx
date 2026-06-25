@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import BeforeAfterSlider from "@/components/BeforeAfterSlider";
 import ThreeSixtyTour from "@/components/ThreeSixtyTour";
+import SupabaseThreeSixtyTour from "@/components/SupabaseThreeSixtyTour";
 import { Star, X, MapPin, Calculator, ShieldCheck, Clock, Layers } from "lucide-react";
 
 export default function ProjectsPage() {
@@ -33,7 +34,7 @@ export default function ProjectsPage() {
     },
     {
       id: "contemporary-bungalow",
-      title: "contemporary Bungalow",
+      title: "HMS Colony",
       img: "/assets/project_villa.png",
       beforeImg: "/assets/video1/ezgif-frame-180.jpg",
       location: "Trichy",
@@ -229,7 +230,7 @@ export default function ProjectsPage() {
                       <span className="text-xs font-semibold text-brand-teak tracking-widest uppercase flex items-center gap-1 border-b border-transparent group-hover:border-brand-teak self-start transition-all duration-300">
                         {t.projects.viewProject}
                       </span>
-                      {p.id === "hero-house" && (
+                      {(p.id === "hero-house" || p.id === "contemporary-bungalow") && (
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -271,7 +272,7 @@ export default function ProjectsPage() {
             <div className={`w-full bg-black flex flex-col justify-start p-0 transition-all duration-300 ${
               activeTab === "360" ? "lg:w-full h-full" : "lg:w-3/5"
             }`}>
-              {selectedProject.id === "hero-house" ? (
+              {(selectedProject.id === "hero-house" || selectedProject.id === "contemporary-bungalow") ? (
                 <div className="flex bg-[#111] border-b border-white/10 p-1.5 select-none shrink-0">
                   <button
                     onClick={() => setActiveTab("slider")}
@@ -297,9 +298,13 @@ export default function ProjectsPage() {
                 </div>
               ) : null}
 
-              {selectedProject.id === "hero-house" && activeTab === "360" ? (
+              {(selectedProject.id === "hero-house" || selectedProject.id === "contemporary-bungalow") && activeTab === "360" ? (
                 <div className="flex-1 w-full bg-brand-charcoal overflow-hidden min-h-[400px] lg:min-h-0">
-                  <ThreeSixtyTour />
+                  {selectedProject.id === "hero-house" ? (
+                    <ThreeSixtyTour />
+                  ) : (
+                    <SupabaseThreeSixtyTour token="d7894b2163e04e32adcd29d15f015fde" />
+                  )}
                 </div>
               ) : (
                 <div className="w-full flex-1 flex flex-col justify-center">

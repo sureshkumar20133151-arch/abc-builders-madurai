@@ -246,7 +246,7 @@ export default function HomePage() {
                 area: "3,800 Sq.Ft",
               },
               {
-                title: "Contemporary Villa",
+                title: "HMS Colony",
                 img: "/assets/project_villa.png",
                 location: "Trichy",
                 type: "Residential Bungalow",
