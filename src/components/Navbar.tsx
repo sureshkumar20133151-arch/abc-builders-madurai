@@ -96,12 +96,10 @@ export default function Navbar() {
             <Link
               key={link.name}
               href={link.href}
-              className={`font-ui text-xs tracking-wider uppercase transition-colors hover:text-brand-teak ${
+              className={`font-ui text-xs tracking-wider uppercase transition-colors ${
                 isActive(link.href)
                   ? "text-brand-teak font-semibold"
-                  : useWhiteText
-                    ? "text-white/80 hover:text-brand-teak"
-                    : "text-text-primary/80"
+                  : "text-brand-teak/80 hover:text-brand-teak"
               }`}
             >
               {link.name}
@@ -198,7 +196,7 @@ export default function Navbar() {
                 href={link.href}
                 onClick={() => setMobileOpen(false)}
                 className={`font-display text-2xl font-medium tracking-tight ${
-                  isActive(link.href) ? "text-brand-teak" : "text-text-primary"
+                  isActive(link.href) ? "text-brand-teak" : "text-brand-teak/80"
                 }`}
               >
                 {link.name}
