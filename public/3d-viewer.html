@@ -27,6 +27,7 @@
             justify-content: center;
             z-index: 1000;
             transition: opacity 0.5s ease-out;
+            pointer-events: none;
         }
         .spinner {
             width: 60px;
@@ -86,7 +87,7 @@
 <div id="loading-overlay">
     <div class="spinner"></div>
     <div class="loading-text">Loading 3D Walkthrough...</div>
-    <div class="loading-subtext">Initializing WebGL...</div>
+    <div class="loading-subtext">Optimizing 3D Gaussian Splats for WebGL</div>
 </div>
 
 <div id="controls-hint" style="display: none;">
@@ -101,7 +102,6 @@
     const params = new URLSearchParams(window.location.search);
     const splatUrl = params.get('url') || '/assets/room.splat';
 
-    // Show progress updates
     const subtextEl = document.querySelector('.loading-subtext');
 
     const viewer = new GaussianSplats3D.Viewer({
@@ -113,19 +113,12 @@
 
     viewer.init()
     .then(() => {
-        subtextEl.innerText = "Downloading 3D Scan (0%)...";
+        subtextEl.innerText = "Downloading 3D Scan...";
         
-        viewer.addSplatScenes([
-            {
-                'path': splatUrl,
-                'showLoadingUI': false,
-                'onProgress': (percent, percentLabel) => {
-                    subtextEl.innerText = `Downloading 3D Scan: ${percentLabel}`;
-                }
-            }
-        ])
+        viewer.addSplatScene(splatUrl, {
+            'showLoadingUI': true
+        })
         .then(() => {
-            subtextEl.innerText = "Rendering Scene...";
             const overlay = document.getElementById('loading-overlay');
             if (overlay) {
                 overlay.style.opacity = 0;
