@@ -33,14 +33,6 @@ export default function ThreeDWalkthrough({ embedUrl, projectName = "Project" }:
       </div>
     );
   }
-
-  // Luma embed URL query params:
-  // - mode=sparkles (Luma's loading effect)
-  // - background=%230a1525 (matching website's dark slate night theme)
-  const lumaUrl = embedUrl.includes("?") 
-    ? `${embedUrl}&mode=sparkles&background=%230a1525`
-    : `${embedUrl}?mode=sparkles&background=%230a1525`;
-
   return (
     <div className="relative w-full h-full min-h-[450px] bg-black overflow-hidden flex flex-col justify-start">
       {loading && (
@@ -51,7 +43,7 @@ export default function ThreeDWalkthrough({ embedUrl, projectName = "Project" }:
       )}
 
       <iframe
-        src={lumaUrl}
+        src={embedUrl}
         width="100%"
         height="100%"
         frameBorder="0"
