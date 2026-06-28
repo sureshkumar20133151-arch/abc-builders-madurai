@@ -128,6 +128,12 @@
     const params = new URLSearchParams(window.location.search);
     const splatUrl = params.get('url') || '/assets/room.splat';
 
+    // Parse camera position, look-at target, and up vector from URL parameters
+    const parseCSV = (str) => str ? str.split(',').map(Number) : null;
+    const cameraUp = parseCSV(params.get('cameraUp'));
+    const initialCameraPosition = parseCSV(params.get('cameraPosition'));
+    const initialCameraLookAt = parseCSV(params.get('cameraLookAt'));
+
     const subtextEl = document.getElementById('loading-subtext');
     const progressBar = document.getElementById('progress-bar');
     const progressPercent = document.getElementById('progress-percent');
@@ -180,10 +186,16 @@
     try {
         subtextEl.innerText = "Connecting to 3D Server...";
 
-        const viewer = new GaussianSplats3D.Viewer({
+        const viewerOptions = {
             'sharedMemoryForWorkers': false,
             'useBuiltInControls': true
-        });
+        };
+
+        if (cameraUp) viewerOptions['cameraUp'] = cameraUp;
+        if (initialCameraPosition) viewerOptions['initialCameraPosition'] = initialCameraPosition;
+        if (initialCameraLookAt) viewerOptions['initialCameraLookAt'] = initialCameraLookAt;
+
+        const viewer = new GaussianSplats3D.Viewer(viewerOptions);
 
         subtextEl.innerText = "Downloading 3D Scan...";
 
