@@ -10,6 +10,14 @@ interface ThreeDWalkthroughProps {
 export default function ThreeDWalkthrough({ embedUrl, projectName = "Project" }: ThreeDWalkthroughProps) {
   const [loading, setLoading] = useState(true);
 
+  React.useEffect(() => {
+    // Safety fallback: dismiss the loading screen after 4 seconds to prevent getting stuck
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 4000);
+    return () => clearTimeout(timer);
+  }, []);
+
   if (!embedUrl) {
     // Elegant Placeholder state if no Luma link is active
     return (
