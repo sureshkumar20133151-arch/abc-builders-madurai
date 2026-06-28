@@ -4,6 +4,8 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import BeforeAfterSlider from "@/components/BeforeAfterSlider";
 import ThreeSixtyTour from "@/components/ThreeSixtyTour";
 import SupabaseThreeSixtyTour from "@/components/SupabaseThreeSixtyTour";
+import ThreeDWalkthrough from "@/components/ThreeDWalkthrough/ThreeDWalkthrough";
+import walkthroughEmbeds from "@/components/ThreeDWalkthrough/embeds.json";
 import { Star, X, MapPin, Calculator, ShieldCheck, Clock, Layers } from "lucide-react";
 
 export default function ProjectsPage() {
@@ -11,7 +13,7 @@ export default function ProjectsPage() {
   const [filterType, setFilterType] = useState("all");
   const [filterDistrict, setFilterDistrict] = useState("all");
   const [selectedProject, setSelectedProject] = useState<any | null>(null);
-  const [activeTab, setActiveTab] = useState<"slider" | "360">("slider");
+  const [activeTab, setActiveTab] = useState<"slider" | "360" | "3d">("slider");
   const [isDirect360, setIsDirect360] = useState(false);
 
   // Projects archive data referencing frames from our extracted video assets
@@ -268,22 +270,23 @@ export default function ProjectsPage() {
               <X className="w-5 h-5" />
             </button>
 
-            {/* Left: Interactive Media Panel (Comparison Slider & 360° Virtual Tour) */}
+            {/* Left: Interactive Media Panel (Comparison Slider, 360° Tour, and 3D Gaussian Walkthrough) */}
             <div className={`w-full bg-black flex flex-col justify-start p-0 transition-all duration-300 ${
-              activeTab === "360" ? "lg:w-full h-full" : "lg:w-3/5"
+              (activeTab === "360" || activeTab === "3d") ? "lg:w-full h-full" : "lg:w-3/5"
             }`}>
-              {(selectedProject.id === "hero-house" || selectedProject.id === "contemporary-bungalow") ? (
-                <div className="flex bg-[#111] border-b border-white/10 p-1.5 select-none shrink-0">
-                  <button
-                    onClick={() => setActiveTab("slider")}
-                    className={`flex-1 text-center py-2.5 text-[10px] md:text-xs uppercase tracking-widest font-semibold transition-all rounded-lg cursor-pointer ${
-                      activeTab === "slider"
-                        ? "bg-brand-teak text-white shadow-md"
-                        : "text-white/60 hover:text-white hover:bg-white/5"
-                    }`}
-                  >
-                    {locale === "ta" ? "வடிவமைப்பு vs நிஜம்" : "Visualisation vs Reality"}
-                  </button>
+              <div className="flex bg-[#111] border-b border-white/10 p-1.5 select-none shrink-0">
+                <button
+                  onClick={() => setActiveTab("slider")}
+                  className={`flex-1 text-center py-2.5 text-[10px] md:text-xs uppercase tracking-widest font-semibold transition-all rounded-lg cursor-pointer ${
+                    activeTab === "slider"
+                      ? "bg-brand-teak text-white shadow-md"
+                      : "text-white/60 hover:text-white hover:bg-white/5"
+                  }`}
+                >
+                  {locale === "ta" ? "வடிவமைப்பு vs நிஜம்" : "Visualisation vs Reality"}
+                </button>
+
+                {(selectedProject.id === "hero-house" || selectedProject.id === "contemporary-bungalow") && (
                   <button
                     onClick={() => setActiveTab("360")}
                     className={`flex-1 text-center py-2.5 text-[10px] md:text-xs uppercase tracking-widest font-semibold transition-all rounded-lg cursor-pointer flex items-center justify-center gap-1.5 ${
@@ -295,10 +298,22 @@ export default function ProjectsPage() {
                     <span className="w-2 h-2 rounded-full bg-brand-teal animate-ping" />
                     <span>{locale === "ta" ? "360° விர்ச்சுவல் டூர்" : "360° Virtual Tour"}</span>
                   </button>
-                </div>
-              ) : null}
+                )}
 
-              {(selectedProject.id === "hero-house" || selectedProject.id === "contemporary-bungalow") && activeTab === "360" ? (
+                <button
+                  onClick={() => setActiveTab("3d")}
+                  className={`flex-1 text-center py-2.5 text-[10px] md:text-xs uppercase tracking-widest font-semibold transition-all rounded-lg cursor-pointer flex items-center justify-center gap-1.5 ${
+                    activeTab === "3d"
+                      ? "bg-brand-teak text-white shadow-md"
+                      : "text-brand-teak hover:bg-brand-teak/10 border border-brand-teak/30"
+                  }`}
+                >
+                  <span className="w-2 h-2 rounded-full bg-brand-teal animate-ping" />
+                  <span>{locale === "ta" ? "3D வால்க்ரூ" : "3D Walkthrough"}</span>
+                </button>
+              </div>
+
+              {activeTab === "360" ? (
                 <div className="flex-1 w-full bg-brand-charcoal overflow-hidden min-h-[400px] lg:min-h-0">
                   {selectedProject.id === "hero-house" ? (
                     <ThreeSixtyTour />
@@ -306,10 +321,17 @@ export default function ProjectsPage() {
                     <SupabaseThreeSixtyTour token="d7894b2163e04e32adcd29d15f015fde" />
                   )}
                 </div>
+              ) : activeTab === "3d" ? (
+                <div className="flex-1 w-full bg-[#111] overflow-hidden min-h-[450px] lg:min-h-0 flex flex-col">
+                  <ThreeDWalkthrough
+                    embedUrl={(walkthroughEmbeds as any)[selectedProject.id]?.embedUrl}
+                    projectName={selectedProject.title}
+                  />
+                </div>
               ) : (
                 <div className="w-full flex-1 flex flex-col justify-center">
                   <div className="p-4 border-b border-white/10 select-none">
-                    <h4 className="font-display text-white text-base font-semibold">{t.projects.sliderTitle}</h4>
+                    <h2 className="font-display text-white text-base font-semibold">{t.projects.sliderTitle}</h2>
                     <p className="font-ui text-[10px] text-white/50">{t.projects.sliderDesc}</p>
                   </div>
                   <BeforeAfterSlider
@@ -324,7 +346,7 @@ export default function ProjectsPage() {
 
             {/* Right: Technical Project Details (40%) */}
             <div className={`w-full p-8 flex flex-col justify-between bg-surface-1 border-l border-border-subtle text-left transition-all duration-300 ${
-              activeTab === "360" ? "hidden" : "lg:w-2/5"
+              (activeTab === "360" || activeTab === "3d") ? "hidden" : "lg:w-2/5"
             }`}>
               <div>
                 <span className="text-brand-teak font-mono text-[9px] uppercase tracking-widest mb-1 block">

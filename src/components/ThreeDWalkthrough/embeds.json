@@ -1,0 +1,26 @@
+{
+  "hero-house": {
+    "embedUrl": "https://lumalabs.ai/embed/84e4f7ff-d3c5-41df-a567-9c9527ec3d2b",
+    "projectName": "The Hero Residence"
+  },
+  "contemporary-bungalow": {
+    "embedUrl": "",
+    "projectName": "HMS Colony"
+  },
+  "corporate-hq": {
+    "embedUrl": "",
+    "projectName": "Corporate HQ Plaza"
+  },
+  "multi-family-complex": {
+    "embedUrl": "",
+    "projectName": "Coimbatore Apartments"
+  },
+  "renivated-haven": {
+    "embedUrl": "",
+    "projectName": "Traditional House Extension"
+  },
+  "dtcp-approved-layout": {
+    "embedUrl": "",
+    "projectName": "Salem Approved Layout"
+  }
+}
