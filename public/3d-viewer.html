@@ -54,6 +54,29 @@
             margin-top: 8px;
             font-weight: bold;
         }
+        .progress-container {
+            width: 240px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            margin-top: 16px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #fb8b24, #ffba08);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+        .progress-percent {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #fb8b24;
+            margin-top: 12px;
+            letter-spacing: 2px;
+            font-variant-numeric: tabular-nums;
+        }
         #controls-hint {
             position: absolute;
             bottom: 20px;
@@ -88,6 +111,10 @@
     <div class="spinner"></div>
     <div class="loading-text">Loading 3D Walkthrough...</div>
     <div class="loading-subtext">Optimizing 3D Gaussian Splats for WebGL</div>
+    <div class="progress-container">
+        <div class="progress-bar" id="progress-bar"></div>
+    </div>
+    <div class="progress-percent" id="progress-percent">0%</div>
 </div>
 
 <div id="controls-hint" style="display: none;">
@@ -103,6 +130,8 @@
     const splatUrl = params.get('url') || '/assets/room.splat';
 
     const subtextEl = document.querySelector('.loading-subtext');
+    const progressBar = document.getElementById('progress-bar');
+    const progressPercent = document.getElementById('progress-percent');
 
     const viewer = new GaussianSplats3D.Viewer({
         'sharedMemoryForWorkers': false,
@@ -111,31 +140,9 @@
 
     subtextEl.innerText = "Connecting to 3D Server...";
 
-    viewer.init()
-    .then(() => {
-        subtextEl.innerText = "Downloading 3D Scan...";
-        
-        viewer.addSplatScene(splatUrl, {
-            'showLoadingUI': true
-        })
-        .then(() => {
-            const overlay = document.getElementById('loading-overlay');
-            if (overlay) {
-                overlay.style.opacity = 0;
-                setTimeout(() => {
-                    overlay.remove();
-                    document.getElementById('controls-hint').style.display = 'flex';
-                }, 500);
-            }
-            viewer.start();
-        })
-        .catch((err) => {
-            console.error("Failed to load splat scene:", err);
-            subtextEl.innerText = "Failed to fetch 3D file: " + (err.message || "Network error");
-            subtextEl.style.color = "#d90429";
-        });
-    })
-    .catch((err) => {
+    try {
+        viewer.init();
+    } catch (err) {
         console.error("Failed to initialize Gaussian Splatting viewer:", err);
         const text = document.querySelector('.loading-text');
         if (text) {
@@ -146,6 +153,41 @@
             subtextEl.innerText = err.message || "WebGL 2.0 context is not supported in this browser.";
             subtextEl.style.color = "#d90429";
         }
+    }
+
+    subtextEl.innerText = "Downloading 3D Scan...";
+
+    viewer.addSplatScene(splatUrl, {
+        'showLoadingUI': false,
+        'onProgress': (progress) => {
+            // progress is a float from 0 to 1
+            const pct = Math.min(100, Math.max(0, Math.round(progress * 100)));
+            progressBar.style.width = pct + '%';
+            progressPercent.innerText = pct + '%';
+            subtextEl.innerText = 'Downloading 3D Scan... ' + pct + '%';
+        }
+    })
+    .then(() => {
+        progressBar.style.width = '100%';
+        progressPercent.innerText = '100%';
+        subtextEl.innerText = 'Rendering 3D Scene...';
+
+        const overlay = document.getElementById('loading-overlay');
+        if (overlay) {
+            overlay.style.opacity = 0;
+            setTimeout(() => {
+                overlay.remove();
+                document.getElementById('controls-hint').style.display = 'flex';
+            }, 500);
+        }
+        viewer.start();
+    })
+    .catch((err) => {
+        console.error("Failed to load splat scene:", err);
+        subtextEl.innerText = "Failed to fetch 3D file: " + (err.message || "Network error");
+        subtextEl.style.color = "#d90429";
+        progressPercent.innerText = "✕";
+        progressPercent.style.color = "#d90429";
     });
 </script>
 
