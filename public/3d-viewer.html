@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>3D Walkthrough Viewer</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            background-color: #0b132b;
+            font-family: sans-serif;
+            color: #ffffff;
+        }
+        #loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, #1c2541 0%, #0b132b 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease-out;
+        }
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #fb8b24;
+            border-radius: 50%;
+            animation: spin 1s infinite linear;
+            margin-bottom: 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loading-text {
+            font-size: 1.2rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            color: #ffffff;
+        }
+        .loading-subtext {
+            font-size: 0.9rem;
+            color: #8c9099;
+            margin-top: 8px;
+        }
+        #controls-hint {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(11, 19, 43, 0.85);
+            padding: 10px 20px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            font-size: 0.85rem;
+            pointer-events: none;
+            letter-spacing: 0.5px;
+            z-index: 999;
+            text-align: center;
+            display: flex;
+            gap: 15px;
+        }
+        .hint-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .hint-icon {
+            color: #fb8b24;
+        }
+    </style>
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+            "@mkkellogg/gaussian-splats-3d": "https://cdn.jsdelivr.net/npm/@mkkellogg/gaussian-splats-3d@0.4.7/build/gaussian-splats-3d.module.js"
+        }
+    }
+    </script>
+</head>
+<body>
+
+<div id="loading-overlay">
+    <div class="spinner"></div>
+    <div class="loading-text">Loading 3D Walkthrough...</div>
+    <div class="loading-subtext">Optimizing 3D Gaussian Splats for WebGL</div>
+</div>
+
+<div id="controls-hint">
+    <div class="hint-item"><span class="hint-icon">🖱️</span> Left Click + Drag to Rotate</div>
+    <div class="hint-item"><span class="hint-icon">🖐️</span> Right Click + Drag to Pan</div>
+    <div class="hint-item"><span class="hint-icon">🔍</span> Scroll to Zoom</div>
+</div>
+
+<script type="module">
+    import * as GaussianSplats3D from '@mkkellogg/gaussian-splats-3d';
+
+    const params = new URLSearchParams(window.location.search);
+    const splatUrl = params.get('url') || '/assets/room.splat';
+
+    const viewer = new GaussianSplats3D.Viewer({
+        'sharedMemoryForWorkers': false,
+        'useBuiltInControls': true
+    });
+
+    viewer.init()
+    .then(() => {
+        viewer.addSplatScene(splatUrl, {
+            'showLoadingUI': false
+        })
+        .then(() => {
+            const overlay = document.getElementById('loading-overlay');
+            if (overlay) {
+                overlay.style.opacity = 0;
+                setTimeout(() => overlay.remove(), 500);
+            }
+            viewer.start();
+        });
+    })
+    .catch((err) => {
+        console.error("Failed to initialize Gaussian Splatting viewer:", err);
+        const text = document.querySelector('.loading-text');
+        if (text) {
+            text.innerText = "Error Loading 3D Scan";
+            text.style.color = "#d90429";
+        }
+        const subtext = document.querySelector('.loading-subtext');
+        if (subtext) {
+            subtext.innerText = err.message || "WebGL context initialization failed.";
+        }
+    });
+</script>
+
+</body>
+</html>
