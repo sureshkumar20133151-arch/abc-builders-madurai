@@ -1,6 +1,6 @@
 {
   "hero-house": {
-    "embedUrl": "/3d-viewer.html?v=15&url=/assets/room.splat&cameraPosition=0.915,1.508,4.0&cameraLookAt=0.915,1.508,-0.156&debug=true",
+    "embedUrl": "/3d-viewer.html?v=16&url=/assets/room.splat&sceneRotation=0,0,180&cameraPosition=-0.915,-1.508,4.0&cameraLookAt=-0.915,-1.508,-0.156&debug=true",
     "projectName": "The Hero Residence"
   },
   "contemporary-bungalow": {
