@@ -15,6 +15,18 @@ export default function ProjectsPage() {
   const [selectedProject, setSelectedProject] = useState<any | null>(null);
   const [activeTab, setActiveTab] = useState<"slider" | "360" | "3d">("slider");
   const [isDirect360, setIsDirect360] = useState(false);
+  const [hasLoaded360, setHasLoaded360] = useState(false);
+  const [hasLoaded3d, setHasLoaded3d] = useState(false);
+
+  useEffect(() => {
+    if (activeTab === "360") setHasLoaded360(true);
+    if (activeTab === "3d") setHasLoaded3d(true);
+  }, [activeTab]);
+
+  useEffect(() => {
+    setHasLoaded360(false);
+    setHasLoaded3d(false);
+  }, [selectedProject]);
 
   // Projects archive data referencing frames from our extracted video assets
   const projects = [
@@ -318,10 +330,12 @@ export default function ProjectsPage() {
                 <div className={`w-full h-full bg-brand-charcoal overflow-hidden transition-opacity duration-300 ${
                   activeTab === "360" ? "relative opacity-100 z-10 pointer-events-auto" : "absolute inset-0 opacity-0 z-0 pointer-events-none"
                 }`}>
-                  {selectedProject.id === "hero-house" ? (
-                    <ThreeSixtyTour />
-                  ) : (
-                    <SupabaseThreeSixtyTour token="d7894b2163e04e32adcd29d15f015fde" />
+                  {hasLoaded360 && (
+                    selectedProject.id === "hero-house" ? (
+                      <ThreeSixtyTour />
+                    ) : (
+                      <SupabaseThreeSixtyTour token="d7894b2163e04e32adcd29d15f015fde" />
+                    )
                   )}
                 </div>
 
@@ -329,10 +343,12 @@ export default function ProjectsPage() {
                 <div className={`w-full h-full bg-[#111] overflow-hidden transition-opacity duration-300 ${
                   activeTab === "3d" ? "relative opacity-100 z-10 pointer-events-auto" : "absolute inset-0 opacity-0 z-0 pointer-events-none"
                 }`}>
-                  <ThreeDWalkthrough
-                    embedUrl={(walkthroughEmbeds as any)[selectedProject.id]?.embedUrl}
-                    projectName={selectedProject.title}
-                  />
+                  {hasLoaded3d && (
+                    <ThreeDWalkthrough
+                      embedUrl={(walkthroughEmbeds as any)[selectedProject.id]?.embedUrl}
+                      projectName={selectedProject.title}
+                    />
+                  )}
                 </div>
 
                 {/* Before/After Slider Panel */}
