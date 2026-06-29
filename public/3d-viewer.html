@@ -254,12 +254,32 @@
             'progressiveLoad': false
         };
 
+        // Helper function to convert Euler angles (in degrees) to Quaternion [x, y, z, w]
+        function eulerToQuaternion(xDeg, yDeg, zDeg) {
+            const x = (xDeg || 0) * Math.PI / 360;
+            const y = (yDeg || 0) * Math.PI / 360;
+            const z = (zDeg || 0) * Math.PI / 360;
+            
+            const c1 = Math.cos(x);
+            const s1 = Math.sin(x);
+            const c2 = Math.cos(y);
+            const s2 = Math.sin(y);
+            const c3 = Math.cos(z);
+            const s3 = Math.sin(z);
+            
+            const qx = s1 * c2 * c3 + c1 * s2 * s3;
+            const qy = c1 * s2 * c3 - s1 * c2 * s3;
+            const qz = c1 * c2 * s3 + s1 * s2 * c3;
+            const qw = c1 * c2 * c3 - s1 * s2 * s3;
+            
+            return [qx, qy, qz, qw];
+        }
+
         if (scenePosition || sceneRotation || sceneScale) {
             sceneOptions['dynamicScene'] = true;
             if (scenePosition) sceneOptions['position'] = scenePosition;
             if (sceneRotation) {
-                // Convert degrees to radians
-                sceneOptions['rotation'] = sceneRotation.map(deg => deg * Math.PI / 180);
+                sceneOptions['rotation'] = eulerToQuaternion(sceneRotation[0], sceneRotation[1], sceneRotation[2]);
             }
             if (sceneScale) sceneOptions['scale'] = sceneScale;
         }

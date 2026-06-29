@@ -313,35 +313,40 @@ export default function ProjectsPage() {
                 </button>
               </div>
 
-              {activeTab === "360" ? (
-                <div className="flex-1 w-full bg-brand-charcoal overflow-hidden min-h-[400px] lg:min-h-0">
+              {/* 360 Virtual Tour Panel */}
+              <div className={`flex-1 w-full min-h-[400px] lg:min-h-0 ${activeTab === "360" ? "flex flex-col" : "hidden"}`}>
+                <div className="flex-1 w-full bg-brand-charcoal overflow-hidden">
                   {selectedProject.id === "hero-house" ? (
                     <ThreeSixtyTour />
                   ) : (
                     <SupabaseThreeSixtyTour token="d7894b2163e04e32adcd29d15f015fde" />
                   )}
                 </div>
-              ) : activeTab === "3d" ? (
-                <div className="flex-1 w-full bg-[#111] overflow-hidden min-h-[450px] lg:min-h-0 flex flex-col">
+              </div>
+
+              {/* 3D Walkthrough Panel */}
+              <div className={`flex-1 w-full min-h-[450px] lg:min-h-0 ${activeTab === "3d" ? "flex flex-col" : "hidden"}`}>
+                <div className="flex-1 w-full bg-[#111] overflow-hidden flex flex-col">
                   <ThreeDWalkthrough
                     embedUrl={(walkthroughEmbeds as any)[selectedProject.id]?.embedUrl}
                     projectName={selectedProject.title}
                   />
                 </div>
-              ) : (
-                <div className="w-full flex-1 flex flex-col justify-center">
-                  <div className="p-4 border-b border-white/10 select-none">
-                    <h2 className="font-display text-white text-base font-semibold">{t.projects.sliderTitle}</h2>
-                    <p className="font-ui text-[10px] text-white/50">{t.projects.sliderDesc}</p>
-                  </div>
-                  <BeforeAfterSlider
-                    beforeImg={selectedProject.beforeImg}
-                    afterImg={selectedProject.img}
-                    beforeLabel="Structure Still"
-                    afterLabel="Finished Elev"
-                  />
+              </div>
+
+              {/* Before/After Slider Panel */}
+              <div className={`w-full flex-1 flex flex-col justify-center ${activeTab === "slider" ? "flex flex-col" : "hidden"}`}>
+                <div className="p-4 border-b border-white/10 select-none">
+                  <h2 className="font-display text-white text-base font-semibold">{t.projects.sliderTitle}</h2>
+                  <p className="font-ui text-[10px] text-white/50">{t.projects.sliderDesc}</p>
                 </div>
-              )}
+                <BeforeAfterSlider
+                  beforeImg={selectedProject.beforeImg}
+                  afterImg={selectedProject.img}
+                  beforeLabel="Structure Still"
+                  afterLabel="Finished Elev"
+                />
+              </div>
             </div>
 
             {/* Right: Technical Project Details (40%) */}
