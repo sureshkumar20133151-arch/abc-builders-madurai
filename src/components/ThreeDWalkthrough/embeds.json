@@ -4,7 +4,7 @@
     "projectName": "The Hero Residence"
   },
   "contemporary-bungalow": {
-    "embedUrl": "",
+    "embedUrl": "/3d-viewer.html?v=18&url=/assets/building.splat&sceneRotation=0,0,180&cameraPosition=-0.110,0.5,6.0&cameraLookAt=-0.110,-1.0,1.661&cameraUp=-0.208,0.978,0&debug=true",
     "projectName": "HMS Colony"
   },
   "corporate-hq": {
