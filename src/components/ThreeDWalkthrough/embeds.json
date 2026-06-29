@@ -1,10 +1,10 @@
 {
   "hero-house": {
-    "embedUrl": "/3d-viewer.html?v=18&url=/assets/room.splat&sceneRotation=0,0,180&cameraPosition=-0.915,0.5,4.0&cameraLookAt=-0.915,-1.0,-0.156&cameraUp=-0.208,0.978,0&debug=true",
+    "embedUrl": "/3d-viewer.html?v=19&url=/assets/room.splat&sceneRotation=0,0,168&cameraPosition=-1.209,0.5,4.0&cameraLookAt=-1.209,-1.0,-0.156&debug=true",
     "projectName": "The Hero Residence"
   },
   "contemporary-bungalow": {
-    "embedUrl": "/3d-viewer.html?v=18&url=/assets/building.splat&sceneRotation=0,0,180&cameraPosition=-0.110,0.5,6.0&cameraLookAt=-0.110,-1.0,1.661&cameraUp=-0.208,0.978,0&debug=true",
+    "embedUrl": "/3d-viewer.html?v=19&url=/assets/building.splat&sceneRotation=0,0,168&cameraPosition=-0.471,0.5,6.0&cameraLookAt=-0.471,-1.0,1.661&debug=true",
     "projectName": "HMS Colony"
   },
   "corporate-hq": {
