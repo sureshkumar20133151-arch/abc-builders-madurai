@@ -147,6 +147,26 @@
 
 <button id="reset-btn">🔄 Center View</button>
 
+<div id="debug-panel" style="
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: rgba(11, 19, 43, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    padding: 12px;
+    border-radius: 8px;
+    font-family: monospace;
+    font-size: 0.8rem;
+    z-index: 1002;
+    display: none;
+    pointer-events: none;
+    line-height: 1.4;
+">
+    <div>Camera: <span id="debug-cam">0,0,0</span></div>
+    <div>Target: <span id="debug-target">0,0,0</span></div>
+</div>
+
 <script type="module">
     import * as GaussianSplats3D from 'https://cdn.jsdelivr.net/npm/@mkkellogg/gaussian-splats-3d@0.4.7/+esm';
 
@@ -158,6 +178,11 @@
     const cameraUp = parseCSV(params.get('cameraUp'));
     const initialCameraPosition = parseCSV(params.get('cameraPosition'));
     const initialCameraLookAt = parseCSV(params.get('cameraLookAt'));
+
+    // Parse scene transformation parameters
+    const scenePosition = parseCSV(params.get('scenePosition'));
+    const sceneRotation = parseCSV(params.get('sceneRotation')); // in degrees, e.g., 90,0,0
+    const sceneScale = parseCSV(params.get('sceneScale'));
 
     const subtextEl = document.getElementById('loading-subtext');
     const progressBar = document.getElementById('progress-bar');
@@ -224,24 +249,38 @@
 
         subtextEl.innerText = "Downloading 3D Scan...";
 
-        viewer.addSplatScene(splatUrl, {
+        const sceneOptions = {
             'showLoadingUI': false,
             'progressiveLoad': false
-        })
+        };
+
+        if (scenePosition || sceneRotation || sceneScale) {
+            sceneOptions['dynamicScene'] = true;
+            if (scenePosition) sceneOptions['position'] = scenePosition;
+            if (sceneRotation) {
+                // Convert degrees to radians
+                sceneOptions['rotation'] = sceneRotation.map(deg => deg * Math.PI / 180);
+            }
+            if (sceneScale) sceneOptions['scale'] = sceneScale;
+        }
+
+        viewer.addSplatScene(splatUrl, sceneOptions)
         .then(() => {
             finishProgress();
             subtextEl.innerText = "Rendering 3D Scene...";
 
-            // Capture initial camera position and controls target for reset functionality
-            const initialCameraPos = viewer.camera.position.clone();
-            const initialControlsTarget = viewer.controls.target.clone();
+            // Placeholders to copy camera state on load
+            let initialCameraPos = null;
+            let initialControlsTarget = null;
 
             const resetBtn = document.getElementById('reset-btn');
             if (resetBtn) {
                 resetBtn.addEventListener('click', () => {
-                    viewer.camera.position.copy(initialCameraPos);
-                    viewer.controls.target.copy(initialControlsTarget);
-                    viewer.controls.update();
+                    if (initialCameraPos && initialControlsTarget) {
+                        viewer.camera.position.copy(initialCameraPos);
+                        viewer.controls.target.copy(initialControlsTarget);
+                        viewer.controls.update();
+                    }
                 });
             }
 
@@ -253,11 +292,38 @@
                         overlay.remove();
                         document.getElementById('controls-hint').style.display = 'flex';
                         if (resetBtn) resetBtn.style.display = 'block';
+
+                        // Capture the camera position and target AFTER auto-framing has finished!
+                        if (viewer.camera && viewer.controls) {
+                            initialCameraPos = viewer.camera.position.clone();
+                            initialControlsTarget = viewer.controls.target.clone();
+                        }
                     }, 800);
                 }
             }, 400);
 
             viewer.start();
+
+            // Set up real-time debug display if debug=true is specified
+            if (params.get('debug') === 'true') {
+                const debugPanel = document.getElementById('debug-panel');
+                if (debugPanel) {
+                    debugPanel.style.display = 'block';
+                    const debugCam = document.getElementById('debug-cam');
+                    const debugTarget = document.getElementById('debug-target');
+                    
+                    const updateDebug = () => {
+                        if (viewer.camera && viewer.controls) {
+                            const cp = viewer.camera.position;
+                            const ct = viewer.controls.target;
+                            debugCam.innerText = `${cp.x.toFixed(2)}, ${cp.y.toFixed(2)}, ${cp.z.toFixed(2)}`;
+                            debugTarget.innerText = `${ct.x.toFixed(2)}, ${ct.y.toFixed(2)}, ${ct.z.toFixed(2)}`;
+                        }
+                        requestAnimationFrame(updateDebug);
+                    };
+                    requestAnimationFrame(updateDebug);
+                }
+            }
         })
         .catch((err) => {
             console.error("Failed to load splat scene:", err);
