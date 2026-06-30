@@ -381,7 +381,7 @@ export default function ProjectsPage() {
                 <div className={`w-full h-full bg-brand-charcoal overflow-hidden transition-opacity duration-300 ${
                   activeTab === "360" ? "relative opacity-100 z-10 pointer-events-auto" : "absolute inset-0 opacity-0 z-0 pointer-events-none"
                 }`}>
-                  {hasLoaded360 && (
+                  {activeTab === "360" && (
                     selectedProject.id === "hero-house" ? (
                       <SupabaseThreeSixtyTour token="2258328a-e44d-44ba-96d1-5bf51cecd851" initialMode="tour" />
                     ) : (
@@ -394,7 +394,7 @@ export default function ProjectsPage() {
                 <div className={`w-full h-full bg-[#111] overflow-hidden transition-opacity duration-300 ${
                   activeTab === "3d" ? "relative opacity-100 z-10 pointer-events-auto" : "absolute inset-0 opacity-0 z-0 pointer-events-none"
                 }`}>
-                  {hasLoaded3d && (
+                  {activeTab === "3d" && (
                     selectedProject.id === "hero-house" ? (
                       <SupabaseThreeSixtyTour token="2258328a-e44d-44ba-96d1-5bf51cecd851" initialMode="walkthrough" />
                     ) : selectedProject.id === "contemporary-bungalow" ? (
