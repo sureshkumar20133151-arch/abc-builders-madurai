@@ -38,6 +38,8 @@ interface Project {
   embed_token: string;
   floorplan_url?: string | null;
   show_compass?: boolean;
+  show_three_sixty?: boolean;
+  show_walkthrough?: boolean;
   walkthrough_url?: string | null;
   walkthrough_rotation?: string | null;
   walkthrough_cam_position?: string | null;
@@ -138,8 +140,8 @@ export default function SupabaseThreeSixtyTour({ token }: SupabaseThreeSixtyTour
         setProject(projectData);
         setRooms(mappedRooms);
 
-        const has360 = mappedRooms.some((r) => r.photo_url);
-        const hasWalk = !!projectData.walkthrough_url;
+        const has360 = (projectData.show_three_sixty ?? true) && mappedRooms.some((r) => r.photo_url);
+        const hasWalk = (projectData.show_walkthrough ?? true) && !!projectData.walkthrough_url;
         if (hasWalk && !has360) {
           setActiveMode("walkthrough");
         } else {
@@ -497,7 +499,7 @@ export default function SupabaseThreeSixtyTour({ token }: SupabaseThreeSixtyTour
         )}
 
         {/* Toggle Mode Tab Bar (Client) */}
-        {project?.walkthrough_url && rooms.some((r) => r.photo_url) && (
+        {project?.walkthrough_url && (project?.show_walkthrough ?? true) && rooms.some((r) => r.photo_url) && (project?.show_three_sixty ?? true) && (
           <div className="absolute top-4 left-4 md:left-auto md:right-16 z-30 bg-brand-night/90 border border-brand-teak/30 rounded-lg p-1.5 shadow-lg backdrop-blur-md flex gap-1 select-none">
             <button
               onClick={() => setActiveMode("tour")}
