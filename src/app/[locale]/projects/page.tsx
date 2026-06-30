@@ -34,7 +34,12 @@ export default function ProjectsPage() {
   useEffect(() => {
     if (!selectedProject) return;
     async function fetchProjectData() {
-      const token = selectedProject.id === "contemporary-bungalow" ? "d7894b2163e04e32adcd29d15f015fde" : null;
+      let token = null;
+      if (selectedProject.id === "contemporary-bungalow") {
+        token = "d7894b2163e04e32adcd29d15f015fde";
+      } else if (selectedProject.id === "hero-house") {
+        token = "2258328a-e44d-44ba-96d1-5bf51cecd851";
+      }
       if (!token) return;
       try {
         const { data } = await supabase
@@ -64,11 +69,11 @@ export default function ProjectsPage() {
     }
   }, [dbProject]);
 
-  const show360Tab = selectedProject?.id === "contemporary-bungalow" 
+  const show360Tab = selectedProject?.id === "contemporary-bungalow" || selectedProject?.id === "hero-house"
     ? (dbProject ? (dbProject.show_three_sixty ?? true) : true) 
-    : (selectedProject?.id === "hero-house");
+    : false;
 
-  const show3dTab = selectedProject?.id === "contemporary-bungalow"
+  const show3dTab = selectedProject?.id === "contemporary-bungalow" || selectedProject?.id === "hero-house"
     ? (dbProject ? ((dbProject.show_walkthrough ?? true) && !!dbProject.walkthrough_url) : true)
     : true;
 
