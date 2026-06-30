@@ -138,6 +138,14 @@ export default function SupabaseThreeSixtyTour({ token }: SupabaseThreeSixtyTour
         setProject(projectData);
         setRooms(mappedRooms);
 
+        const has360 = mappedRooms.some((r) => r.photo_url);
+        const hasWalk = !!projectData.walkthrough_url;
+        if (hasWalk && !has360) {
+          setActiveMode("walkthrough");
+        } else {
+          setActiveMode("tour");
+        }
+
         // Determine starting room (ensure it has a photo)
         const entryRoom = mappedRooms.find((r) => r.id === projectData.entry_room_id && r.photo_url);
         const firstPhotoRoom = entryRoom || mappedRooms.find((r) => r.photo_url);
@@ -489,7 +497,7 @@ export default function SupabaseThreeSixtyTour({ token }: SupabaseThreeSixtyTour
         )}
 
         {/* Toggle Mode Tab Bar (Client) */}
-        {project?.walkthrough_url && (
+        {project?.walkthrough_url && rooms.some((r) => r.photo_url) && (
           <div className="absolute top-4 left-4 md:left-auto md:right-16 z-30 bg-brand-night/90 border border-brand-teak/30 rounded-lg p-1.5 shadow-lg backdrop-blur-md flex gap-1 select-none">
             <button
               onClick={() => setActiveMode("tour")}
