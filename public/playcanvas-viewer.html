@@ -6,6 +6,22 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
         <base href="">
         <link rel="stylesheet" href="./playcanvas-viewer.css">
+        <script>
+            window.addEventListener('error', (event) => {
+                const consoleDiv = document.getElementById('error-console');
+                if (consoleDiv) {
+                    consoleDiv.style.display = 'block';
+                    consoleDiv.innerText += `\nError: ${event.message} at ${event.filename}:${event.lineno}:${event.colno}`;
+                }
+            });
+            window.addEventListener('unhandledrejection', (event) => {
+                const consoleDiv = document.getElementById('error-console');
+                if (consoleDiv) {
+                    consoleDiv.style.display = 'block';
+                    consoleDiv.innerText += `\nRejection: ${event.reason?.message || event.reason}`;
+                }
+            });
+        </script>
         <script type="module">
             const createImage = (url) => {
                 const img = new Image();
@@ -21,7 +37,7 @@
             const settingsUrl = url.searchParams.has('settings') ? url.searchParams.get('settings') : './settings.json';
             const contentUrl = url.searchParams.has('content') ? url.searchParams.get('content') : './scene.compressed.ply';
 
-            const renderer = url.searchParams.has('webgl') ? 'webgl' : 'webgpu';
+            const renderer = (url.searchParams.has('webgl') || !navigator.gpu) ? 'webgl' : 'webgpu';
 
             const budgetParam = url.searchParams.get('budget');
             const budget = budgetParam !== null ? Number(budgetParam) : undefined;
@@ -53,6 +69,7 @@
         </script>
     </head>
     <body>
+        <div id="error-console" style="position: absolute; top: 0; left: 0; right: 0; background: rgba(220, 38, 38, 0.95); color: white; font-family: monospace; font-size: 11px; z-index: 99999; pointer-events: none; padding: 10px; display: none; white-space: pre-wrap; word-break: break-all; border-bottom: 2px solid white;">[SUPER SPLAT ERROR CONSOLE]</div>
         <canvas id="application-canvas"></canvas>
 
         <div id="ui">
