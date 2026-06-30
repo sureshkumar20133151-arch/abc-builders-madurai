@@ -38,6 +38,10 @@ interface Project {
   embed_token: string;
   floorplan_url?: string | null;
   show_compass?: boolean;
+  walkthrough_url?: string | null;
+  walkthrough_rotation?: string | null;
+  walkthrough_cam_position?: string | null;
+  walkthrough_cam_lookat?: string | null;
 }
 
 interface SupabaseThreeSixtyTourProps {
@@ -65,6 +69,7 @@ export default function SupabaseThreeSixtyTour({ token }: SupabaseThreeSixtyTour
     "Top Floor": true,
   });
   const [infoPopupText, setInfoPopupText] = useState<string | null>(null);
+  const [activeMode, setActiveMode] = useState<"tour" | "walkthrough">("tour");
 
   const viewerInstanceRef = useRef<any>(null);
 
@@ -192,7 +197,7 @@ export default function SupabaseThreeSixtyTour({ token }: SupabaseThreeSixtyTour
 
   // 3. Initialize and update Pannellum viewer
   useEffect(() => {
-    if (!pannellumReady || !containerRef.current || !(window as any).pannellum || !activeRoom || !activeRoom.photo_url) return;
+    if (activeMode === "walkthrough" || !pannellumReady || !containerRef.current || !(window as any).pannellum || !activeRoom || !activeRoom.photo_url) return;
 
     const panViewer = (window as any).pannellum;
 
@@ -369,18 +374,20 @@ export default function SupabaseThreeSixtyTour({ token }: SupabaseThreeSixtyTour
 
       {/* Sidebar - Room Navigator (Width: 260px) - Hidden on mobile */}
       <div className="hidden md:flex w-[260px] bg-brand-night border-r border-brand-teak/20 flex-col h-full z-10 shrink-0">
-        <div className="p-4 border-b border-brand-teak/10 shrink-0">
-          <h4 className="font-display font-medium text-brand-teak text-base tracking-wide flex items-center gap-2">
-            <span>{locale === "ta" ? "360° விர்ச்சுவல் டூர்" : "360° Virtual Tour"}</span>
-          </h4>
-          <input
-            type="text"
-            placeholder={locale === "ta" ? "அறைகளைத் தேடு..." : "Search rooms..."}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-brand-charcoal border border-brand-teak/20 rounded p-2 text-xs text-white outline-none mt-2 focus:border-brand-teak transition-all font-mono"
-          />
-        </div>
+        {activeMode === "tour" ? (
+          <>
+            <div className="p-4 border-b border-brand-teak/10 shrink-0">
+              <h4 className="font-display font-medium text-brand-teak text-base tracking-wide flex items-center gap-2">
+                <span>{locale === "ta" ? "360° விர்ச்சுவல் டூர்" : "360° Virtual Tour"}</span>
+              </h4>
+              <input
+                type="text"
+                placeholder={locale === "ta" ? "அறைகளைத் தேடு..." : "Search rooms..."}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-brand-charcoal border border-brand-teak/20 rounded p-2 text-xs text-white outline-none mt-2 focus:border-brand-teak transition-all font-mono"
+              />
+            </div>
 
         {/* Accordion Room List */}
         <div className="flex-1 overflow-y-auto p-3 space-y-2 select-none">
@@ -438,12 +445,24 @@ export default function SupabaseThreeSixtyTour({ token }: SupabaseThreeSixtyTour
             );
           })}
         </div>
+          </>
+        ) : (
+          <div className="flex-1 flex flex-col items-center justify-center p-6 text-center text-white/50">
+            <span className="text-xs uppercase tracking-widest font-bold text-brand-teak mb-2 font-display">3D Walkthrough</span>
+            <p className="text-[11px] leading-relaxed text-white/60">
+              {locale === "ta" 
+                ? "வழிகாட்டி விசைகள் அல்லது மவுஸ் மூலம் இந்த இடத்தை சுற்றிப்பார்க்கலாம்."
+                : "Explore the digital twin space using mouse/keyboard controls."}
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Main Panoramic Viewer Canvas (Flex-1) */}
       <div className="flex-1 h-full relative bg-black flex items-center justify-center">
         {/* Mobile Room Selector Dropdown */}
-        <div className="absolute top-4 left-4 z-20 md:hidden bg-brand-night/95 border border-brand-teak/30 rounded-lg px-3 py-2 shadow-lg backdrop-blur-md max-w-[200px]">
+        {activeMode === "tour" && (
+          <div className="absolute top-4 left-4 z-20 md:hidden bg-brand-night/95 border border-brand-teak/30 rounded-lg px-3 py-2 shadow-lg backdrop-blur-md max-w-[200px]">
           <select
             value={activeRoomId || ""}
             onChange={(e) => {
@@ -467,50 +486,90 @@ export default function SupabaseThreeSixtyTour({ token }: SupabaseThreeSixtyTour
             })}
           </select>
         </div>
+        )}
 
-        {!pannellumReady && (
-          <div className="absolute inset-0 bg-brand-charcoal/80 flex flex-col justify-center items-center gap-3 select-none text-center">
-            <span className="w-8 h-8 rounded-full border-2 border-brand-teak border-t-transparent animate-spin" />
-            <span className="text-xs uppercase tracking-widest font-mono text-brand-teak animate-pulse">
-              {locale === "ta" ? "டூர் லோடு ஆகிறது..." : "Loading 360° Tour..."}
-            </span>
+        {/* Toggle Mode Tab Bar (Client) */}
+        {project?.walkthrough_url && (
+          <div className="absolute top-4 left-4 md:left-auto md:right-16 z-30 bg-brand-night/90 border border-brand-teak/30 rounded-lg p-1.5 shadow-lg backdrop-blur-md flex gap-1 select-none">
+            <button
+              onClick={() => setActiveMode("tour")}
+              className={`px-3 py-1 rounded text-xs font-semibold transition-all cursor-pointer ${
+                activeMode === "tour"
+                  ? "bg-brand-teak text-white"
+                  : "text-white/60 hover:text-white"
+              }`}
+            >
+              {locale === "ta" ? "360° டூர்" : "360° Tour"}
+            </button>
+            <button
+              onClick={() => setActiveMode("walkthrough")}
+              className={`px-3 py-1 rounded text-xs font-semibold transition-all cursor-pointer ${
+                activeMode === "walkthrough"
+                  ? "bg-brand-teak text-white"
+                  : "text-white/60 hover:text-white"
+              }`}
+            >
+              {locale === "ta" ? "3D வால்க்ரூ" : "3D Walkthrough"}
+            </button>
           </div>
         )}
 
-        {/* Pannellum Container ref */}
-        <div ref={containerRef} className="w-full h-full" />
+        {activeMode === "walkthrough" && project ? (
+          <iframe
+            src={`/playcanvas-viewer.html?content=${encodeURIComponent(project.walkthrough_url || "")}&noui&v=1${project.walkthrough_rotation ? `&sceneRotation=${encodeURIComponent(project.walkthrough_rotation)}` : ''}${project.walkthrough_cam_position ? `&cameraPosition=${encodeURIComponent(project.walkthrough_cam_position)}` : ''}${project.walkthrough_cam_lookat ? `&cameraLookAt=${encodeURIComponent(project.walkthrough_cam_lookat)}` : ''}`}
+            className="w-full h-full border-0 relative z-10"
+            title="3D Walkthrough"
+            allow="xr-spatial-tracking; clipboard-write; gamepad"
+          />
+        ) : (
+          <>
+            {!pannellumReady && (
+              <div className="absolute inset-0 bg-brand-charcoal/80 flex flex-col justify-center items-center gap-3 select-none text-center">
+                <span className="w-8 h-8 rounded-full border-2 border-brand-teak border-t-transparent animate-spin" />
+                <span className="text-xs uppercase tracking-widest font-mono text-brand-teak animate-pulse">
+                  {locale === "ta" ? "டூர் லோடு ஆகிறது..." : "Loading 360° Tour..."}
+                </span>
+              </div>
+            )}
+
+            {/* Pannellum Container ref */}
+            <div ref={containerRef} className="w-full h-full" />
+          </>
+        )}
 
         {/* Current Room Indicator Label */}
         <div className="absolute bottom-4 left-4 bg-brand-night/85 border border-brand-teak/30 px-4 py-2 rounded-lg text-xs font-semibold backdrop-blur-md z-10 select-none shadow-md">
           {activeRoom.room_name}
         </div>
 
-        {/* Controls Overlay (Top Right) */}
-        <div className="absolute top-4 right-4 flex items-center gap-2 z-10 select-none">
-          {/* Minimap toggle */}
-          {project?.floorplan_url && (
-            <button
-              onClick={() => setShowMinimap(!showMinimap)}
-              className={`w-9 h-9 rounded-full bg-brand-night/85 hover:bg-brand-teak text-white flex items-center justify-center border border-brand-teak/30 transition-all cursor-pointer ${
-                showMinimap ? "bg-brand-teak" : ""
-              }`}
-              title="Floor Plan Map"
-            >
-              <Map className="w-4 h-4" />
-            </button>
-          )}
+        {/* Controls Overlay (Top Right) - Hidden in Walkthrough */}
+        {activeMode === "tour" && (
+          <div className="absolute top-4 right-4 flex items-center gap-2 z-10 select-none">
+            {/* Minimap toggle */}
+            {project?.floorplan_url && (
+              <button
+                onClick={() => setShowMinimap(!showMinimap)}
+                className={`w-9 h-9 rounded-full bg-brand-night/85 hover:bg-brand-teak text-white flex items-center justify-center border border-brand-teak/30 transition-all cursor-pointer ${
+                  showMinimap ? "bg-brand-teak" : ""
+                }`}
+                title="Floor Plan Map"
+              >
+                <Map className="w-4 h-4" />
+              </button>
+            )}
 
-          {/* Auto rotate toggle */}
-          <button
-            onClick={() => setAutoRotate(!autoRotate)}
-            className={`w-9 h-9 rounded-full bg-brand-night/85 hover:bg-brand-teak text-white flex items-center justify-center border border-brand-teak/30 transition-all cursor-pointer ${
-              autoRotate ? "bg-brand-teak" : ""
-            }`}
-            title="Auto Rotate"
-          >
-            <RotateCw className="w-4 h-4" />
-          </button>
-        </div>
+            {/* Auto rotate toggle */}
+            <button
+              onClick={() => setAutoRotate(!autoRotate)}
+              className={`w-9 h-9 rounded-full bg-brand-night/85 hover:bg-brand-teak text-white flex items-center justify-center border border-brand-teak/30 transition-all cursor-pointer ${
+                autoRotate ? "bg-brand-teak" : ""
+              }`}
+              title="Auto Rotate"
+            >
+              <RotateCw className="w-4 h-4" />
+            </button>
+          </div>
+        )}
 
         {/* Minimap Overlay Panel */}
         {showMinimap && project?.floorplan_url && (
