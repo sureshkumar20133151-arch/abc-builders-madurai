@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { supabase } from "@/lib/supabase";
 import BeforeAfterSlider from "@/components/BeforeAfterSlider";
 import ThreeSixtyTour from "@/components/ThreeSixtyTour";
 import SupabaseThreeSixtyTour from "@/components/SupabaseThreeSixtyTour";
@@ -17,6 +18,7 @@ export default function ProjectsPage() {
   const [isDirect360, setIsDirect360] = useState(false);
   const [hasLoaded360, setHasLoaded360] = useState(false);
   const [hasLoaded3d, setHasLoaded3d] = useState(false);
+  const [dbProject, setDbProject] = useState<any | null>(null);
 
   useEffect(() => {
     if (activeTab === "360") setHasLoaded360(true);
@@ -26,7 +28,49 @@ export default function ProjectsPage() {
   useEffect(() => {
     setHasLoaded360(false);
     setHasLoaded3d(false);
+    setDbProject(null);
   }, [selectedProject]);
+
+  useEffect(() => {
+    if (!selectedProject) return;
+    async function fetchProjectData() {
+      const token = selectedProject.id === "contemporary-bungalow" ? "d7894b2163e04e32adcd29d15f015fde" : null;
+      if (!token) return;
+      try {
+        const { data } = await supabase
+          .from("projects")
+          .select("show_three_sixty, show_walkthrough, walkthrough_url")
+          .eq("embed_token", token)
+          .single();
+        if (data) setDbProject(data);
+      } catch (e) {
+        console.error("Error fetching db project:", e);
+      }
+    }
+    fetchProjectData();
+  }, [selectedProject]);
+
+  useEffect(() => {
+    if (dbProject) {
+      const show360 = dbProject.show_three_sixty ?? true;
+      const showWalk = dbProject.show_walkthrough ?? true;
+      const hasWalk = !!dbProject.walkthrough_url;
+      
+      if (showWalk && hasWalk && !show360) {
+        setActiveTab("3d");
+      } else if (show360 && (!showWalk || !hasWalk)) {
+        setActiveTab("360");
+      }
+    }
+  }, [dbProject]);
+
+  const show360Tab = selectedProject?.id === "contemporary-bungalow" 
+    ? (dbProject ? (dbProject.show_three_sixty ?? true) : true) 
+    : (selectedProject?.id === "hero-house");
+
+  const show3dTab = selectedProject?.id === "contemporary-bungalow"
+    ? (dbProject ? ((dbProject.show_walkthrough ?? true) && !!dbProject.walkthrough_url) : true)
+    : true;
 
   // Projects archive data referencing frames from our extracted video assets
   const projects = [
@@ -298,7 +342,7 @@ export default function ProjectsPage() {
                   {locale === "ta" ? "வடிவமைப்பு vs நிஜம்" : "Visualisation vs Reality"}
                 </button>
 
-                {(selectedProject.id === "hero-house" || selectedProject.id === "contemporary-bungalow") && (
+                {show360Tab && (
                   <button
                     onClick={() => setActiveTab("360")}
                     className={`flex-1 text-center py-2.5 text-[10px] md:text-xs uppercase tracking-widest font-semibold transition-all rounded-lg cursor-pointer flex items-center justify-center gap-1.5 ${
@@ -312,17 +356,19 @@ export default function ProjectsPage() {
                   </button>
                 )}
 
-                <button
-                  onClick={() => setActiveTab("3d")}
-                  className={`flex-1 text-center py-2.5 text-[10px] md:text-xs uppercase tracking-widest font-semibold transition-all rounded-lg cursor-pointer flex items-center justify-center gap-1.5 ${
-                    activeTab === "3d"
-                      ? "bg-brand-teak text-white shadow-md"
-                      : "text-brand-teak hover:bg-brand-teak/10 border border-brand-teak/30"
-                  }`}
-                >
-                  <span className="w-2 h-2 rounded-full bg-brand-teal animate-ping" />
-                  <span>{locale === "ta" ? "3D வால்க்ரூ" : "3D Walkthrough"}</span>
-                </button>
+                {show3dTab && (
+                  <button
+                    onClick={() => setActiveTab("3d")}
+                    className={`flex-1 text-center py-2.5 text-[10px] md:text-xs uppercase tracking-widest font-semibold transition-all rounded-lg cursor-pointer flex items-center justify-center gap-1.5 ${
+                      activeTab === "3d"
+                        ? "bg-brand-teak text-white shadow-md"
+                        : "text-brand-teak hover:bg-brand-teak/10 border border-brand-teak/30"
+                    }`}
+                  >
+                    <span className="w-2 h-2 rounded-full bg-brand-teal animate-ping" />
+                    <span>{locale === "ta" ? "3D வால்க்ரூ" : "3D Walkthrough"}</span>
+                  </button>
+                )}
               </div>
 
               <div className="flex-1 w-full relative min-h-[450px] lg:min-h-0">
