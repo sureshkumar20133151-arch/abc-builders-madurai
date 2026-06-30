@@ -378,9 +378,9 @@ export default function ProjectsPage() {
                 }`}>
                   {hasLoaded360 && (
                     selectedProject.id === "hero-house" ? (
-                      <ThreeSixtyTour />
+                      <SupabaseThreeSixtyTour token="2258328a-e44d-44ba-96d1-5bf51cecd851" initialMode="tour" />
                     ) : (
-                      <SupabaseThreeSixtyTour token="d7894b2163e04e32adcd29d15f015fde" />
+                      <SupabaseThreeSixtyTour token="d7894b2163e04e32adcd29d15f015fde" initialMode="tour" />
                     )
                   )}
                 </div>
@@ -390,10 +390,16 @@ export default function ProjectsPage() {
                   activeTab === "3d" ? "relative opacity-100 z-10 pointer-events-auto" : "absolute inset-0 opacity-0 z-0 pointer-events-none"
                 }`}>
                   {hasLoaded3d && (
-                    <ThreeDWalkthrough
-                      embedUrl={(walkthroughEmbeds as any)[selectedProject.id]?.embedUrl}
-                      projectName={selectedProject.title}
-                    />
+                    selectedProject.id === "hero-house" ? (
+                      <SupabaseThreeSixtyTour token="2258328a-e44d-44ba-96d1-5bf51cecd851" initialMode="walkthrough" />
+                    ) : selectedProject.id === "contemporary-bungalow" ? (
+                      <SupabaseThreeSixtyTour token="d7894b2163e04e32adcd29d15f015fde" initialMode="walkthrough" />
+                    ) : (
+                      <ThreeDWalkthrough
+                        embedUrl={(walkthroughEmbeds as any)[selectedProject.id]?.embedUrl}
+                        projectName={selectedProject.title}
+                      />
+                    )
                   )}
                 </div>
 
