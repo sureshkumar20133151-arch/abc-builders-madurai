@@ -48,9 +48,10 @@ interface Project {
 
 interface SupabaseThreeSixtyTourProps {
   token: string;
+  initialMode?: "tour" | "walkthrough";
 }
 
-export default function SupabaseThreeSixtyTour({ token }: SupabaseThreeSixtyTourProps) {
+export default function SupabaseThreeSixtyTour({ token, initialMode }: SupabaseThreeSixtyTourProps) {
   const { locale, t } = useLanguage();
   const containerRef = useRef<HTMLDivElement>(null);
   const [pannellumReady, setPannellumReady] = useState(false);
@@ -140,9 +141,16 @@ export default function SupabaseThreeSixtyTour({ token }: SupabaseThreeSixtyTour
         setProject(projectData);
         setRooms(mappedRooms);
 
-        const has360 = (projectData.show_three_sixty ?? true) && mappedRooms.some((r) => r.photo_url);
-        const hasWalk = (projectData.show_walkthrough ?? true) && !!projectData.walkthrough_url;
-        if (hasWalk && !has360) {
+        const show360 = projectData.show_three_sixty ?? true;
+        const showWalk = projectData.show_walkthrough ?? true;
+        const has360 = show360 && mappedRooms.some((r) => r.photo_url);
+        const hasWalk = showWalk && !!projectData.walkthrough_url;
+        
+        if (initialMode === "walkthrough" && hasWalk) {
+          setActiveMode("walkthrough");
+        } else if (initialMode === "tour" && has360) {
+          setActiveMode("tour");
+        } else if (hasWalk && !has360) {
           setActiveMode("walkthrough");
         } else {
           setActiveMode("tour");
@@ -527,7 +535,7 @@ export default function SupabaseThreeSixtyTour({ token }: SupabaseThreeSixtyTour
         {activeMode === "walkthrough" && project ? (
           <iframe
             src={`/playcanvas-viewer.html?content=${encodeURIComponent(project.walkthrough_url || "")}&noui&v=1${project.walkthrough_rotation ? `&sceneRotation=${encodeURIComponent(project.walkthrough_rotation)}` : ''}${project.walkthrough_cam_position ? `&cameraPosition=${encodeURIComponent(project.walkthrough_cam_position)}` : ''}${project.walkthrough_cam_lookat ? `&cameraLookAt=${encodeURIComponent(project.walkthrough_cam_lookat)}` : ''}`}
-            className="w-full h-full border-0 relative z-10"
+            className="absolute inset-0 w-full h-full border-0 z-10"
             title="3D Walkthrough"
             allow="xr-spatial-tracking; clipboard-write; gamepad"
           />
