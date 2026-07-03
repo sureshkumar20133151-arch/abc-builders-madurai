@@ -128,7 +128,7 @@ function DesktopHero() {
       if (loadedCount === TOTAL_FRAMES) setIsLoaded(true);
     };
 
-    const tempImg = new Image();
+    const tempImg = document.createElement("img");
     tempImg.src = "/assets/video1/ezgif-frame-001.jpg";
 
     for (let v = 1; v <= 3; v++) {
@@ -138,7 +138,7 @@ function DesktopHero() {
         const actualFrameNum = i * STEP + 1;
         const paddedNum = actualFrameNum.toString().padStart(3, "0");
         const url = `/assets/video${v}/ezgif-frame-${paddedNum}.jpg`;
-        const img = new Image();
+        const img = document.createElement("img");
         img.src = url;
         img.onload = onLoad;
         img.onerror = onLoad;
