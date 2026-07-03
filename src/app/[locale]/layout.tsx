@@ -44,6 +44,10 @@ export async function generateMetadata({
 }) {
   const { locale } = await params;
   const isTa = locale === "ta";
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://abc-builders-madurai.vercel.app";
+  const canonicalUrl = `${baseUrl}/${locale}`;
+  const ogImage = `${baseUrl}/assets/project_villa.png`;
+
   return {
     title: isTa
       ? "ஏபிசி பில்டர்ஸ் மதுரை | சிறந்த கட்டுமான நிறுவனம் | வீடுகள் & வணிக வளாகங்கள்"
@@ -51,15 +55,46 @@ export async function generateMetadata({
     description: isTa
       ? "மதுரையில் 12+ ஆண்டுகள் அனுபவத்துடன் 250+ வீடுகள், வில்லாக்கள் மற்றும் வணிகக் கட்டிடங்களை வாஸ்து முறைப்படி தரமாக கட்டித் தரும் முன்னணி கட்டுமான நிறுவனம்."
       : "Leading construction company in Madurai with 12+ years of experience and 250+ completed high-end residential bungalows, villas, and commercial complexes.",
-    metadataBase: new URL("https://abcbuildersmadurai.com"),
+    metadataBase: new URL(baseUrl),
+    alternates: {
+      canonical: canonicalUrl,
+      languages: {
+        "en": `${baseUrl}/en`,
+        "ta": `${baseUrl}/ta`,
+      },
+    },
     openGraph: {
       title: isTa
         ? "ஏபிசி பில்டர்ஸ் மதுரை | சிறந்த கட்டுமான நிறுவனம்"
         : "ABC Builders Madurai | Premier Construction Company",
       description: isTa
         ? "வாஸ்து முறைப்படி தரமான வீடுகளைக் கட்டித் தரும் மதுரை முன்னணி கட்டுமான நிறுவனம்."
-        : "Leading construction company in Madurai with 12+ years experience.",
+        : "Leading construction company in Madurai with 12+ years experience. Build your dream home with Vastu-compliant designs.",
+      url: canonicalUrl,
+      siteName: "ABC Builders Madurai",
       type: "website",
+      locale: isTa ? "ta_IN" : "en_IN",
+      alternateLocale: isTa ? ["en_IN"] : ["ta_IN"],
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: isTa
+            ? "ஏபிசி பில்டர்ஸ் மதுரை - சிறந்த வில்லா கட்டுமானம்"
+            : "ABC Builders Madurai – Premium Villa Construction",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: isTa
+        ? "ஏபிசி பில்டர்ஸ் மதுரை | சிறந்த கட்டுமான நிறுவனம்"
+        : "ABC Builders Madurai | Premier Construction Company",
+      description: isTa
+        ? "வாஸ்து முறைப்படி தரமான வீடுகளைக் கட்டித் தரும் மதுரை முன்னணி கட்டுமான நிறுவனம்."
+        : "Leading construction company in Madurai with 12+ years experience. Build your dream home with Vastu-compliant designs.",
+      images: [ogImage],
     },
   };
 }
@@ -73,14 +108,15 @@ export default async function LocaleLayout({
 }) {
   const { locale } = await params;
   const safeLocale = (locale === "ta" ? "ta" : "en") as Locale;
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://abc-builders-madurai.vercel.app";
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     "name": "ABC Builders Madurai",
-    "image": "https://abcbuildersmadurai.com/assets/video3/ezgif-frame-140.jpg",
-    "@id": "https://abcbuildersmadurai.com/#localbusiness",
-    "url": "https://abcbuildersmadurai.com",
+    "image": `${siteUrl}/assets/project_villa.png`,
+    "@id": `${siteUrl}/#localbusiness`,
+    "url": siteUrl,
     "telephone": "+919876543210",
     "priceRange": "$$$",
     "address": {
