@@ -10,14 +10,9 @@ export default function LoadingScreen() {
   const brandText = "ABC BUILDERS, MADURAI";
 
   useEffect(() => {
-    // Mobile gets a shorter loading screen — WhatsApp visitors shouldn't wait
-    const isMobile = window.matchMedia("(max-width: 767px)").matches;
-    const hideDuration = isMobile ? 800 : 2800;
-    const typeSpeed = isMobile ? 20 : 60;
-
-    // Enable skip button after 600ms (mobile) / 1s (desktop)
-    const skipTimer = setTimeout(() => setCanSkip(true), isMobile ? 600 : 1000);
-
+    // Enable skip button after 1s
+    const skipTimer = setTimeout(() => setCanSkip(true), 1000);
+    
     // Typewriter effect for brand text
     let index = 0;
     const typeInterval = setInterval(() => {
@@ -27,14 +22,14 @@ export default function LoadingScreen() {
       } else {
         clearInterval(typeInterval);
       }
-    }, typeSpeed);
+    }, 60);
 
-    // Hide loader after duration
+    // Hide loader after 2.8s
     const hideTimer = setTimeout(() => {
       handleComplete();
-    }, hideDuration);
+    }, 2800);
 
-    // Prevent scroll while loading
+    // Add class to body to prevent scrolling while loading
     document.body.classList.add("no-scroll");
 
     return () => {

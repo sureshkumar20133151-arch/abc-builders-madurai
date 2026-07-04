@@ -2,104 +2,22 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import Link from "next/link";
-import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-// ─── Desktop-only config ────────────────────────────────────────────────────
-const VIDEO_FRAMES = { 1: 240, 2: 200, 3: 240 } as const;
-const STEP = 2;
-const TOTAL_FRAMES =
-  VIDEO_FRAMES[1] / STEP + VIDEO_FRAMES[2] / STEP + VIDEO_FRAMES[3] / STEP; // 340
+// Configuration for frame scrubbing
+const VIDEO_FRAMES = {
+  1: 240,
+  2: 200,
+  3: 240
+} as const;
 
-// ─── Mobile Hero ─────────────────────────────────────────────────────────────
-// Shows instantly on page load — no scroll, no loading bar, CTA visible in <400ms
-function MobileHero() {
-  const { locale, t } = useLanguage();
-  const [visible, setVisible] = useState(false);
+const STEP = 2; // load every 2nd frame
+const TOTAL_FRAMES = (VIDEO_FRAMES[1] / STEP) + (VIDEO_FRAMES[2] / STEP) + (VIDEO_FRAMES[3] / STEP); // 120 + 100 + 120 = 340
 
-  useEffect(() => {
-    // Single RAF ensures layout is ready before fade starts
-    const id = requestAnimationFrame(() => setVisible(true));
-    return () => cancelAnimationFrame(id);
-  }, []);
-
-  return (
-    <div className="relative w-full h-screen bg-black overflow-hidden select-none">
-      {/* Static background image — no loading bar, loads instantly */}
-      <Image
-        src="/assets/project_villa.png"
-        alt="ABC Builders Madurai – Premium Villa"
-        fill
-        priority
-        className="object-cover object-center"
-        style={{ opacity: 0.65 }}
-      />
-
-      {/* Gradient for text legibility */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
-
-      {/* Hero text — all visible immediately, no scroll needed */}
-      <div
-        className="absolute inset-0 flex flex-col justify-end px-6 pb-16 pointer-events-none"
-        style={{
-          opacity: visible ? 1 : 0,
-          transform: visible ? "translateY(0)" : "translateY(16px)",
-          transition: "opacity 0.5s ease, transform 0.5s ease",
-        }}
-      >
-        <div className="flex flex-col gap-3 max-w-sm">
-          {/* Badge */}
-          <span className="font-display italic text-brand-teak tracking-wider text-sm">
-            {t.hero.badge}
-          </span>
-
-          {/* Main headline */}
-          <h1 className="font-display text-white text-4xl leading-none font-medium tracking-tight flex flex-col">
-            <span>{t.hero.line2}</span>
-            <span className="italic font-light text-white/90">{t.hero.line3}</span>
-          </h1>
-
-          {/* Subtext */}
-          <p className="font-ui text-sm text-white/70 leading-relaxed">
-            {t.hero.sub}
-          </p>
-
-          {/* CTA Buttons — pointer-events-auto so they're tappable */}
-          <div className="flex flex-col gap-3 mt-4 pointer-events-auto">
-            <Link
-              href={`/${locale}/projects`}
-              className="bg-brand-teak text-text-primary font-semibold px-6 py-4 text-xs uppercase tracking-widest text-center active:opacity-80 transition-opacity"
-            >
-              {t.hero.ctaProjects}
-            </Link>
-            <Link
-              href={`/${locale}/contact`}
-              className="border border-white text-white font-semibold px-6 py-4 text-xs uppercase tracking-widest text-center active:opacity-80 transition-opacity"
-            >
-              {t.hero.ctaEstimate}
-            </Link>
-          </div>
-
-          {/* Trust signal */}
-          <p className="font-mono text-[10px] text-white/40 uppercase tracking-widest mt-2">
-            250+ Completed · 12+ Years · Madurai
-          </p>
-        </div>
-      </div>
-
-      {/* Technical badge */}
-      <div className="absolute top-20 left-5 font-mono text-[9px] text-white/40 border border-white/20 px-2 py-0.5 rounded tracking-widest uppercase">
-        {t.hero.visualBadge}
-      </div>
-    </div>
-  );
-}
-
-// ─── Desktop Hero (scroll-scrubbed canvas — unchanged) ───────────────────────
-function DesktopHero() {
+export default function ScrollCanvas() {
   const { locale, t } = useLanguage();
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -107,9 +25,12 @@ function DesktopHero() {
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
   const [showLoader, setShowLoader] = useState(true);
-  const [activeStep, setActiveStep] = useState(0);
-  const [scrollProgress, setScrollProgress] = useState(0);
+  
+  // Track active section for progress dots
+  const [activeStep, setActiveStep] = useState(0); // 0 = Design, 1 = Build, 2 = Dream
+  const [scrollProgress, setScrollProgress] = useState(0); // 0 to 100
 
+  // Unmount loader after fade out
   useEffect(() => {
     if (isLoaded) {
       const timer = setTimeout(() => setShowLoader(false), 800);
@@ -117,20 +38,25 @@ function DesktopHero() {
     }
   }, [isLoaded]);
 
-  // Preload frames
+  // Preload Images
   useEffect(() => {
     const loadedImages: HTMLImageElement[] = [];
     let loadedCount = 0;
 
     const onLoad = () => {
       loadedCount++;
-      setLoadingProgress(Math.round((loadedCount / TOTAL_FRAMES) * 100));
-      if (loadedCount === TOTAL_FRAMES) setIsLoaded(true);
+      const progress = Math.round((loadedCount / TOTAL_FRAMES) * 100);
+      setLoadingProgress(progress);
+      if (loadedCount === TOTAL_FRAMES) {
+        setIsLoaded(true);
+      }
     };
 
+    // Load first frame immediately for LCP
     const tempImg = document.createElement("img");
     tempImg.src = "/assets/video1/ezgif-frame-001.jpg";
 
+    // Populate arrays dynamically based on video lengths
     for (let v = 1; v <= 3; v++) {
       const framesCount = VIDEO_FRAMES[v as 1 | 2 | 3];
       const subsetSize = framesCount / STEP;
@@ -141,14 +67,14 @@ function DesktopHero() {
         const img = document.createElement("img");
         img.src = url;
         img.onload = onLoad;
-        img.onerror = onLoad;
+        img.onerror = onLoad; // Count even on error to prevent freezing
         loadedImages.push(img);
       }
     }
     setImages(loadedImages);
   }, []);
 
-  // Canvas + ScrollTrigger
+  // Canvas Drawing & ScrollTrigger Sync
   useEffect(() => {
     if (!isLoaded || images.length === 0 || !canvasRef.current || !containerRef.current) return;
 
@@ -156,46 +82,72 @@ function DesktopHero() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    // GSAP ScrollTrigger timeline configuration
     const scrollIndexObj = { frame: 0 };
 
-    const drawFrame = (index: number) => {
-      const idx = Math.min(Math.max(0, Math.floor(index)), TOTAL_FRAMES - 1);
-      let img = images[idx];
-      if (!img || !img.complete) {
-        for (let offset = 1; offset < TOTAL_FRAMES; offset++) {
-          const prevIdx = idx - offset;
-          const nextIdx = idx + offset;
-          if (prevIdx >= 0 && images[prevIdx]?.complete) { img = images[prevIdx]; break; }
-          if (nextIdx < TOTAL_FRAMES && images[nextIdx]?.complete) { img = images[nextIdx]; break; }
-        }
-        if (!img) return;
-      }
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const imgWidth = img.naturalWidth || 1920;
-      const imgHeight = img.naturalHeight || 1080;
-      const canvasRatio = canvas.width / canvas.height;
-      const imgRatio = imgWidth / imgHeight;
-      let drawWidth = canvas.width, drawHeight = canvas.height, offsetX = 0, offsetY = 0;
-      if (canvasRatio > imgRatio) {
-        drawHeight = canvas.width / imgRatio;
-        offsetY = (canvas.height - drawHeight) / 2;
-      } else {
-        drawWidth = canvas.height * imgRatio;
-        offsetX = (canvas.width - drawWidth) / 2;
-      }
-      ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
-    };
-
+    // Handle canvas sizing
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
       drawFrame(scrollIndexObj.frame);
     };
 
+    const drawFrame = (index: number) => {
+      const idx = Math.min(Math.max(0, Math.floor(index)), TOTAL_FRAMES - 1);
+      let img = images[idx] as HTMLImageElement | undefined;
+      if (!img || !img.complete) {
+        // Fallback to closest loaded image to avoid flicker
+        let found = false;
+        for (let offset = 1; offset < TOTAL_FRAMES; offset++) {
+          const prevIdx = idx - offset;
+          const nextIdx = idx + offset;
+          if (prevIdx >= 0 && images[prevIdx] && images[prevIdx].complete) {
+            img = images[prevIdx];
+            found = true;
+            break;
+          }
+          if (nextIdx < TOTAL_FRAMES && images[nextIdx] && images[nextIdx].complete) {
+            img = images[nextIdx];
+            found = true;
+            break;
+          }
+        }
+        if (!found) return;
+      }
+
+      if (!img) return;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Cover scaling
+      const imgWidth = img.naturalWidth || 1920;
+      const imgHeight = img.naturalHeight || 1080;
+      const canvasWidth = canvas.width;
+      const canvasHeight = canvas.height;
+
+      const imgRatio = imgWidth / imgHeight;
+      const canvasRatio = canvasWidth / canvasHeight;
+
+      let drawWidth = canvasWidth;
+      let drawHeight = canvasHeight;
+      let offsetX = 0;
+      let offsetY = 0;
+
+      if (canvasRatio > imgRatio) {
+        drawHeight = canvasWidth / imgRatio;
+        offsetY = (canvasHeight - drawHeight) / 2;
+      } else {
+        drawWidth = canvasHeight * imgRatio;
+        offsetX = (canvasWidth - drawWidth) / 2;
+      }
+
+      ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+    };
+
     window.addEventListener("resize", resizeCanvas);
     resizeCanvas();
-
+    
+    // Timeline to scrub frames
     const timeline = gsap.timeline({
       scrollTrigger: {
         id: "hero-scroll-canvas-trigger",
@@ -203,38 +155,52 @@ function DesktopHero() {
         start: "top top",
         end: "+=300%",
         pin: true,
-        scrub: 1.2,
+        scrub: 1.2, // lag coefficient for cinematic feel
         onUpdate: (self) => {
           setScrollProgress(self.progress * 100);
-          if (self.progress < 0.33) setActiveStep(0);
-          else if (self.progress < 0.66) setActiveStep(1);
-          else setActiveStep(2);
+          if (self.progress < 0.33) {
+            setActiveStep(0);
+          } else if (self.progress < 0.66) {
+            setActiveStep(1);
+          } else {
+            setActiveStep(2);
+          }
         },
       },
     });
 
+    // Scrub frames
     timeline.to(scrollIndexObj, {
       frame: TOTAL_FRAMES - 1,
       ease: "none",
-      onUpdate: () => drawFrame(scrollIndexObj.frame),
+      onUpdate: () => {
+        drawFrame(scrollIndexObj.frame);
+      },
     });
 
+    // Trigger update on page load/mount
     drawFrame(0);
 
     return () => {
       window.removeEventListener("resize", resizeCanvas);
       timeline.kill();
-      ScrollTrigger.getById("hero-scroll-canvas-trigger")?.kill();
+      const trigger = ScrollTrigger.getById("hero-scroll-canvas-trigger");
+      if (trigger) trigger.kill();
     };
   }, [isLoaded, images]);
 
+  // Handle dot click transitions
   const scrollToPercent = (percent: number) => {
-    window.scrollTo({ top: window.innerHeight * 3 * percent, behavior: "smooth" });
+    const scrollPos = window.innerHeight * 3 * percent;
+    window.scrollTo({
+      top: scrollPos,
+      behavior: "smooth"
+    });
   };
 
   return (
     <div ref={containerRef} className="relative w-full h-screen bg-black overflow-hidden select-none">
-      {/* Loader */}
+      {/* Premium Loader overlay for assets */}
       {showLoader && (
         <div
           className={`absolute inset-0 bg-brand-night flex flex-col justify-center items-center z-50 transition-opacity duration-700 ease-in-out ${
@@ -244,26 +210,30 @@ function DesktopHero() {
           <div className="text-brand-teak font-display text-3xl md:text-4xl italic mb-6 animate-pulse tracking-wide select-none">
             ABC Builders
           </div>
+          
+          {/* Progress bar container */}
           <div className="w-64 h-[1.5px] bg-white/10 relative overflow-hidden mb-3">
             <div
               className="absolute left-0 top-0 h-full bg-brand-teak transition-all duration-300 ease-out"
               style={{ width: `${loadingProgress}%` }}
             />
           </div>
+          
+          {/* Progress percentage text */}
           <div className="text-[10px] font-mono text-white/50 tracking-widest uppercase">
             Loading {loadingProgress}%
           </div>
         </div>
       )}
 
-      {/* Canvas */}
+      {/* Render Canvas */}
       <canvas
         ref={canvasRef}
         className="absolute inset-0 w-full h-full object-cover"
         style={{ opacity: isLoaded ? 1 : 0, transition: "opacity 0.5s ease" }}
       />
 
-      {/* Text Overlay — Video 1 (0–33%) */}
+      {/* TEXT OVERLAYS - VIDEO 1 SEGMENT (0% to 33% scroll) */}
       <div
         className="absolute inset-0 flex flex-col justify-end p-8 md:p-24 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none transition-opacity duration-300"
         style={{
@@ -271,12 +241,17 @@ function DesktopHero() {
         }}
       >
         <div className="max-w-3xl flex flex-col gap-2">
+          {/* Line 1 */}
           <span
             className="font-display italic text-brand-teak tracking-wider transition-all duration-500 text-sm md:text-lg"
-            style={{ opacity: scrollProgress >= 2 ? 1 : 0, transform: `translateY(${scrollProgress >= 2 ? 0 : 10}px)` }}
+            style={{
+              opacity: scrollProgress >= 2 ? 1 : 0,
+              transform: `translateY(${scrollProgress >= 2 ? 0 : 10}px)`,
+            }}
           >
             {t.hero.badge}
           </span>
+          {/* Line 2 & 3 */}
           <h1
             className="font-display text-white text-5xl md:text-8xl leading-none font-medium flex flex-col tracking-tight"
             style={{
@@ -288,15 +263,24 @@ function DesktopHero() {
             <span>{t.hero.line2}</span>
             <span className="italic font-light text-white/90">{t.hero.line3}</span>
           </h1>
+          {/* Line 4 */}
           <p
             className="font-ui text-sm md:text-base text-white/70 mt-4 leading-relaxed max-w-md"
-            style={{ opacity: scrollProgress >= 5 ? 1 : 0, transition: "opacity 0.5s ease 0.2s" }}
+            style={{
+              opacity: scrollProgress >= 5 ? 1 : 0,
+              transition: "opacity 0.5s ease 0.2s",
+            }}
           >
             {t.hero.sub}
           </p>
+
+          {/* CTA Buttons */}
           <div
             className="flex items-center gap-4 mt-8 pointer-events-auto"
-            style={{ opacity: scrollProgress >= 8 ? 1 : 0, transition: "opacity 0.5s ease 0.4s" }}
+            style={{
+              opacity: scrollProgress >= 8 ? 1 : 0,
+              transition: "opacity 0.5s ease 0.4s",
+            }}
           >
             <Link
               href={`/${locale}/projects`}
@@ -305,7 +289,7 @@ function DesktopHero() {
               {t.hero.ctaProjects}
             </Link>
             <Link
-              href={`/${locale}/contact`}
+              href={`/${locale}/services`}
               className="border border-white hover:bg-white hover:text-black text-white font-semibold px-6 py-3 text-xs uppercase tracking-widest transition-all duration-300 cursor-pointer"
             >
               {t.hero.ctaEstimate}
@@ -314,16 +298,21 @@ function DesktopHero() {
         </div>
       </div>
 
-      {/* Blueprint grid flash */}
+      {/* Blueprint Grid Faint Overlay (0 to 8% scroll) */}
       <div
         className="absolute inset-0 blueprint-grid pointer-events-none transition-opacity duration-300"
-        style={{ opacity: scrollProgress >= 2 && scrollProgress <= 8 ? (8 - scrollProgress) * 0.01 : 0 }}
+        style={{
+          opacity: scrollProgress >= 2 && scrollProgress <= 8 ? (8 - scrollProgress) * 0.01 : 0,
+        }}
       />
 
-      {/* Text Overlay — Video 2 (33–66%) */}
+      {/* TEXT OVERLAYS - VIDEO 2 SEGMENT (33% to 66% scroll) */}
       <div
         className="absolute inset-0 flex items-center justify-end p-8 md:p-24 pointer-events-none"
-        style={{ opacity: scrollProgress >= 48 && scrollProgress <= 60 ? 1 : 0, transition: "opacity 0.5s ease" }}
+        style={{
+          opacity: scrollProgress >= 48 && scrollProgress <= 60 ? 1 : 0,
+          transition: "opacity 0.5s ease",
+        }}
       >
         <div className="text-right max-w-md">
           <span className="font-display italic text-2xl md:text-4xl text-white/90">
@@ -332,21 +321,28 @@ function DesktopHero() {
         </div>
       </div>
 
-      {/* Text Overlay — Video 3 (66–100%) */}
+      {/* TEXT OVERLAYS - VIDEO 3 SEGMENT (66% to 100% scroll) */}
       <div
         className="absolute inset-0 flex flex-col items-center justify-center text-center p-8 bg-black/30 pointer-events-none"
-        style={{ opacity: scrollProgress >= 82 ? (scrollProgress - 82) / 10 : 0, transition: "opacity 0.3s ease" }}
+        style={{
+          opacity: scrollProgress >= 82 ? (scrollProgress - 82) / 10 : 0,
+          transition: "opacity 0.3s ease",
+        }}
       >
         <div className="max-w-2xl flex flex-col gap-2">
-          <span className="font-display italic text-4xl md:text-6xl text-night-glow">{t.hero.thisCouldBe}</span>
+          <span className="font-display italic text-4xl md:text-6xl text-night-glow">
+            {t.hero.thisCouldBe}
+          </span>
           <span className="font-display text-white text-5xl md:text-8xl tracking-tight leading-none uppercase font-semibold">
             {t.hero.yourHome}
           </span>
-          <span className="font-ui text-xs text-night-glow/70 mt-6 tracking-widest uppercase">{t.hero.subText}</span>
+          <span className="font-ui text-xs text-night-glow/70 mt-6 tracking-widest uppercase">
+            {t.hero.subText}
+          </span>
         </div>
       </div>
 
-      {/* Progress Dots */}
+      {/* Progress Dots Indicator (Bottom-Right) */}
       <div className="absolute bottom-10 right-10 flex items-center gap-4 z-20">
         {[
           { name: t.hero.design, percent: 0.15 },
@@ -360,7 +356,9 @@ function DesktopHero() {
           >
             <span
               className={`w-3 h-3 rounded-full border transition-all duration-300 ${
-                activeStep === idx ? "bg-brand-teak border-transparent scale-125" : "border-white/50 bg-transparent group-hover:bg-white/30"
+                activeStep === idx
+                  ? "bg-brand-teak border-transparent scale-125"
+                  : "border-white/50 bg-transparent group-hover:bg-white/30"
               }`}
             />
             <span
@@ -374,31 +372,10 @@ function DesktopHero() {
         ))}
       </div>
 
-      {/* Technical label */}
+      {/* Technical label for 3D Visualisation */}
       <div className="absolute top-24 left-8 md:left-12 font-mono text-[9px] text-white/50 border border-white/20 px-2 py-0.5 rounded tracking-widest uppercase">
         {t.hero.visualBadge}
       </div>
     </div>
   );
-}
-
-// ─── Root export — detects mobile on client, picks the right hero ─────────────
-export default function ScrollCanvas() {
-  // Start as null (SSR-safe), resolve on client
-  const [isMobile, setIsMobile] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 767px)");
-    setIsMobile(mq.matches);
-    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
-  }, []);
-
-  // During SSR / hydration flash → show nothing (avoids mismatch)
-  if (isMobile === null) {
-    return <div className="w-full h-screen bg-black" />;
-  }
-
-  return isMobile ? <MobileHero /> : <DesktopHero />;
 }
