@@ -127,25 +127,17 @@ export default function ScrollCanvas() {
 
       const imgRatio = imgWidth / imgHeight;
       const canvasRatio = canvasWidth / canvasHeight;
-      const isMobilePortrait = canvasWidth < canvasHeight; // portrait = mobile
-
       let drawWidth = canvasWidth;
       let drawHeight = canvasHeight;
       let offsetX = 0;
       let offsetY = 0;
 
-      if (isMobilePortrait) {
-        // Mobile: contain — show full landscape image, letterbox top/bottom
-        drawWidth = canvasWidth;
-        drawHeight = canvasWidth / imgRatio;
-        offsetX = 0;
-        offsetY = (canvasHeight - drawHeight) / 2;
-      } else if (canvasRatio > imgRatio) {
-        // Desktop: canvas wider than image
+      if (canvasRatio > imgRatio) {
+        // Desktop/wide: canvas wider than image
         drawHeight = canvasWidth / imgRatio;
         offsetY = (canvasHeight - drawHeight) / 2;
       } else {
-        // Desktop: cover — fill height, center crop sides
+        // Mobile/narrow: cover — fill height, center crop sides
         drawWidth = canvasHeight * imgRatio;
         offsetX = (canvasWidth - drawWidth) / 2;
       }
