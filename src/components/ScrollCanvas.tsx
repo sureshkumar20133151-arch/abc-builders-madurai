@@ -9,13 +9,13 @@ gsap.registerPlugin(ScrollTrigger);
 
 // Configuration for frame scrubbing
 const VIDEO_FRAMES = {
-  1: 240,
-  2: 200,
-  3: 240
+  1: 192,
+  2: 192,
+  3: 192
 } as const;
 
 const STEP = 2; // load every 2nd frame
-const TOTAL_FRAMES = (VIDEO_FRAMES[1] / STEP) + (VIDEO_FRAMES[2] / STEP) + (VIDEO_FRAMES[3] / STEP); // 120 + 100 + 120 = 340
+const TOTAL_FRAMES = (VIDEO_FRAMES[1] / STEP) + (VIDEO_FRAMES[2] / STEP) + (VIDEO_FRAMES[3] / STEP); // 96 + 96 + 96 = 288
 
 export default function ScrollCanvas() {
   const { locale, t } = useLanguage();

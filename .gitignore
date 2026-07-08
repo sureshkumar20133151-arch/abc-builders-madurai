@@ -45,3 +45,7 @@ next-env.d.ts
 # credentials
 supabase_credentials.txt
 *credentials.txt
+
+# raw animation files
+/new hero animation/
+
