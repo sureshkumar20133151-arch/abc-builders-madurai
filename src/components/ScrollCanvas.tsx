@@ -140,33 +140,26 @@ export default function ScrollCanvas() {
       const imgRatio = imgWidth / imgHeight;
       const canvasRatio = canvasWidth / canvasHeight;
 
+      let drawWidth = canvasWidth;
+      let drawHeight = canvasHeight;
+      let offsetX = 0;
+      let offsetY = 0;
+
       if (canvasRatio > imgRatio) {
-        // Desktop/wide: normal cover scaling (centered vertically)
-        const drawHeight = canvasWidth / imgRatio;
-        const offsetY = (canvasHeight - drawHeight) / 2;
-        ctx.drawImage(img, 0, offsetY, canvasWidth, drawHeight);
+        // Desktop/wide: normal cover scaling (slightly raised vertical offset to keep roof visible)
+        drawWidth = canvasWidth;
+        drawHeight = canvasWidth / imgRatio;
+        offsetX = 0;
+        offsetY = (canvasHeight - drawHeight) * 0.35;
       } else {
-        // Mobile/portrait: contain building + blurred environment background + dynamic zoom
-        const ZOOM = 1.5; // Scale factor to crop out side margins and zoom building on mobile
-        ctx.save();
-        ctx.filter = "blur(12px)";
-        // Draw cover background
-        const bgWidth = canvasHeight * imgRatio;
-        const bgOffsetX = (canvasWidth - bgWidth) / 2;
-        ctx.drawImage(img, bgOffsetX, 0, bgWidth, canvasHeight);
-        ctx.restore();
-
-        // Dark overlay on top of blurred background
-        ctx.fillStyle = "rgba(0, 0, 0, 0.45)";
-        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-
-        // Draw crisp zoomed building on top (scaling width & height, centering)
-        const drawWidth = canvasWidth * ZOOM;
-        const drawHeight = (canvasWidth * ZOOM) / imgRatio;
-        const offsetX = (canvasWidth - drawWidth) / 2;
-        const offsetY = (canvasHeight - drawHeight) / 2;
-        ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+        // Mobile/portrait: cover scaling (fills height, centers horizontally)
+        drawHeight = canvasHeight;
+        drawWidth = canvasHeight * imgRatio;
+        offsetX = (canvasWidth - drawWidth) / 2;
+        offsetY = 0;
       }
+
+      ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
     };
 
     window.addEventListener("resize", resizeCanvas);
