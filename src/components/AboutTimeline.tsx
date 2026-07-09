@@ -51,8 +51,8 @@ export default function AboutTimeline() {
     { year: "2020", key: "t2020", img: "/assets/video1/ezgif-frame-180.jpg" },
     { year: "2022", key: "t2022", img: "/assets/video2/ezgif-frame-040.jpg" },
     { year: "2024", key: "t2024", img: "/assets/video2/ezgif-frame-120.jpg" },
-    { year: "2025", key: "t2025", img: "/assets/video2/ezgif-frame-240.jpg" },
-    { year: "2026", key: "t2026", img: "/assets/video3/ezgif-frame-240.jpg" },
+    { year: "2025", key: "t2025", img: "/assets/video2/ezgif-frame-192.jpg" },
+    { year: "2026", key: "t2026", img: "/assets/video3/ezgif-frame-192.jpg" },
   ];
 
   return (

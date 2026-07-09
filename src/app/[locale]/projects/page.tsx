@@ -82,7 +82,7 @@ export default function ProjectsPage() {
     {
       id: "hero-house",
       title: "The Hero Residence",
-      img: "/assets/video2/ezgif-frame-240.jpg",
+      img: "/assets/video2/ezgif-frame-192.jpg",
       beforeImg: "/assets/video1/ezgif-frame-120.jpg", // raw structure frame
       location: "Madurai",
       type: "residential",

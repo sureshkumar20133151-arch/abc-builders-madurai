@@ -240,7 +240,7 @@ export default function HomePage() {
             {[
               {
                 title: "The Hero Residence",
-                img: "/assets/video2/ezgif-frame-240.jpg",
+                img: "/assets/video2/ezgif-frame-192.jpg",
                 location: "Madurai",
                 type: "Residential G+1",
                 area: "3,800 Sq.Ft",
