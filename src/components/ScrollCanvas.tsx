@@ -143,8 +143,12 @@ export default function ScrollCanvas() {
       const canvasRatio = canvasWidth / canvasHeight;
 
       if (canvasRatio > imgRatio) {
-        // Desktop/wide: 100% fit (stretch to fill browser without cropping)
-        ctx.drawImage(img, 0, 0, canvasWidth, canvasHeight);
+        // Desktop/wide: normal cover scaling (centered vertically, preserving aspect ratio)
+        const drawWidth = canvasWidth;
+        const drawHeight = canvasWidth / imgRatio;
+        const offsetX = 0;
+        const offsetY = (canvasHeight - drawHeight) / 2;
+        ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
       } else {
         // Mobile/portrait: moderate zoom (55% height contain) + blurred background fill
         const targetHeight = canvasHeight * 0.55;
