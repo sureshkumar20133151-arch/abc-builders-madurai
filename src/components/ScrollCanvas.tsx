@@ -65,9 +65,9 @@ export default function ScrollCanvas() {
         const paddedNum = actualFrameNum.toString().padStart(3, "0");
         const url = `/assets/video${v}/ezgif-frame-${paddedNum}.jpg`;
         const img = document.createElement("img");
-        img.src = url;
         img.onload = onLoad;
-        img.onerror = onLoad; // Count even on error to prevent freezing
+        img.onerror = onLoad;
+        img.src = url; // Count even on error to prevent freezing
         loadedImages.push(img);
       }
     }
