@@ -95,12 +95,14 @@ export default function ScrollCanvas() {
       
       // Avoid height jumps on mobile browsers when address bar shows/hides
       const isMobile = window.innerWidth < 768;
-      if (isMobile && canvas.width === width && Math.abs(canvas.height - height) < 100) {
+      const dpr = window.devicePixelRatio || 1;
+      if (isMobile && canvas.width === Math.round(width * dpr) && Math.abs(canvas.height - Math.round(height * dpr)) < (100 * dpr)) {
         return;
       }
       
-      canvas.width = width;
-      canvas.height = height;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      ctx.scale(dpr, dpr);
       drawFrame(scrollIndexObj.frame);
     };
 
@@ -129,37 +131,46 @@ export default function ScrollCanvas() {
 
       if (!img) return;
 
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // Use logical coordinates for clearRect and drawing calculations
+      const canvasWidth = window.innerWidth;
+      const canvasHeight = window.innerHeight;
 
-      // Cover scaling
+      ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
       const imgWidth = img.naturalWidth || 1920;
       const imgHeight = img.naturalHeight || 1080;
-      const canvasWidth = canvas.width;
-      const canvasHeight = canvas.height;
-
       const imgRatio = imgWidth / imgHeight;
       const canvasRatio = canvasWidth / canvasHeight;
 
-      let drawWidth = canvasWidth;
-      let drawHeight = canvasHeight;
-      let offsetX = 0;
-      let offsetY = 0;
-
       if (canvasRatio > imgRatio) {
         // Desktop/wide: normal cover scaling (slightly raised vertical offset to keep roof visible)
-        drawWidth = canvasWidth;
-        drawHeight = canvasWidth / imgRatio;
-        offsetX = 0;
-        offsetY = (canvasHeight - drawHeight) * 0.35;
+        const drawWidth = canvasWidth;
+        const drawHeight = canvasWidth / imgRatio;
+        const offsetX = 0;
+        const offsetY = (canvasHeight - drawHeight) * 0.35;
+        ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
       } else {
-        // Mobile/portrait: cover scaling (fills height, centers horizontally)
-        drawHeight = canvasHeight;
-        drawWidth = canvasHeight * imgRatio;
-        offsetX = (canvasWidth - drawWidth) / 2;
-        offsetY = 0;
-      }
+        // Mobile/portrait: moderate zoom (55% height contain) + blurred background fill
+        const targetHeight = canvasHeight * 0.55;
+        const targetWidth = targetHeight * imgRatio;
 
-      ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+        ctx.save();
+        ctx.filter = "blur(16px)";
+        // Draw cover background (fills 100% of canvas)
+        const bgWidth = canvasHeight * imgRatio;
+        const bgOffsetX = (canvasWidth - bgWidth) / 2;
+        ctx.drawImage(img, bgOffsetX, 0, bgWidth, canvasHeight);
+        ctx.restore();
+
+        // Dark overlay on top of blurred background
+        ctx.fillStyle = "rgba(0, 0, 0, 0.45)";
+        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+        // Draw centered crisp building on top (covering full width, centering vertically)
+        const offsetX = (canvasWidth - targetWidth) / 2;
+        const offsetY = (canvasHeight - targetHeight) / 2;
+        ctx.drawImage(img, offsetX, offsetY, targetWidth, targetHeight);
+      }
     };
 
     window.addEventListener("resize", resizeCanvas);
