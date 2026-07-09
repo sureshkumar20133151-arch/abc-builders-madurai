@@ -143,47 +143,64 @@ export default function ScrollCanvas() {
       const canvasRatio = canvasWidth / canvasHeight;
 
       if (canvasRatio > imgRatio) {
-        // Desktop/wide: 100% height contain (fully visible building) + blurred side backgrounds
+        // Desktop/wide: 100% height contain (fully visible building) + dynamically stretched left/right backgrounds
         const targetHeight = canvasHeight;
         const targetWidth = canvasHeight * imgRatio;
-
-        ctx.save();
-        ctx.filter = "blur(16px)";
-        // Draw cover background (fills 100% of canvas)
-        const bgWidth = canvasWidth;
-        const bgHeight = canvasWidth / imgRatio;
-        const bgOffsetY = (canvasHeight - bgHeight) / 2;
-        ctx.drawImage(img, 0, bgOffsetY, bgWidth, bgHeight);
-        ctx.restore();
-
-        // Dark overlay on top of blurred background
-        ctx.fillStyle = "rgba(0, 0, 0, 0.45)";
-        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-
-        // Draw centered crisp building on top (100% height)
         const offsetX = (canvasWidth - targetWidth) / 2;
         const offsetY = 0;
-        ctx.drawImage(img, offsetX, offsetY, targetWidth, targetHeight);
-      } else {
-        // Mobile/portrait: moderate zoom (55% height contain) + blurred background fill
-        const targetHeight = canvasHeight * 0.55;
-        const targetWidth = targetHeight * imgRatio;
 
         ctx.save();
-        ctx.filter = "blur(16px)";
-        // Draw cover background (fills 100% of canvas)
-        const bgWidth = canvasHeight * imgRatio;
-        const bgOffsetX = (canvasWidth - bgWidth) / 2;
-        ctx.drawImage(img, bgOffsetX, 0, bgWidth, canvasHeight);
+        ctx.filter = "blur(12px)";
+        // Left margin stretch: 3px vertical strip from the left edge of the current image
+        ctx.drawImage(
+          img,
+          0, 0, 3, imgHeight,
+          0, 0, offsetX, canvasHeight
+        );
+        // Right margin stretch: 3px vertical strip from the right edge of the current image
+        ctx.drawImage(
+          img,
+          imgWidth - 3, 0, 3, imgHeight,
+          offsetX + targetWidth, 0, canvasWidth - (offsetX + targetWidth), canvasHeight
+        );
         ctx.restore();
 
-        // Dark overlay on top of blurred background
-        ctx.fillStyle = "rgba(0, 0, 0, 0.45)";
-        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+        // Dark overlay on the stretched sides to blend softly
+        ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
+        ctx.fillRect(0, 0, offsetX, canvasHeight);
+        ctx.fillRect(offsetX + targetWidth, 0, canvasWidth - (offsetX + targetWidth), canvasHeight);
 
-        // Draw centered crisp building on top (covering full width, centering vertically)
+        // Draw centered crisp building on top (100% height)
+        ctx.drawImage(img, offsetX, offsetY, targetWidth, targetHeight);
+      } else {
+        // Mobile/portrait: moderate zoom (55% height contain) + dynamically stretched top/bottom backgrounds
+        const targetHeight = canvasHeight * 0.55;
+        const targetWidth = targetHeight * imgRatio;
         const offsetX = (canvasWidth - targetWidth) / 2;
         const offsetY = (canvasHeight - targetHeight) / 2;
+
+        ctx.save();
+        ctx.filter = "blur(12px)";
+        // Top margin stretch: 3px horizontal strip from the top edge of the current image
+        ctx.drawImage(
+          img,
+          0, 0, imgWidth, 3,
+          offsetX, 0, targetWidth, offsetY
+        );
+        // Bottom margin stretch: 3px horizontal strip from the bottom edge of the current image
+        ctx.drawImage(
+          img,
+          0, imgHeight - 3, imgWidth, 3,
+          offsetX, offsetY + targetHeight, targetWidth, canvasHeight - (offsetY + targetHeight)
+        );
+        ctx.restore();
+
+        // Dark overlay on the stretched top/bottom padding to blend softly
+        ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
+        ctx.fillRect(0, 0, canvasWidth, offsetY);
+        ctx.fillRect(0, offsetY + targetHeight, canvasWidth, canvasHeight - (offsetY + targetHeight));
+
+        // Draw centered crisp building on top (covering full width, centering vertically)
         ctx.drawImage(img, offsetX, offsetY, targetWidth, targetHeight);
       }
     };
