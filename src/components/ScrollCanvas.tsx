@@ -143,12 +143,8 @@ export default function ScrollCanvas() {
       const canvasRatio = canvasWidth / canvasHeight;
 
       if (canvasRatio > imgRatio) {
-        // Desktop/wide: normal cover scaling (slightly raised vertical offset to keep roof visible)
-        const drawWidth = canvasWidth;
-        const drawHeight = canvasWidth / imgRatio;
-        const offsetX = 0;
-        const offsetY = (canvasHeight - drawHeight) * 0.35;
-        ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+        // Desktop/wide: 100% fit (stretch to fill browser without cropping)
+        ctx.drawImage(img, 0, 0, canvasWidth, canvasHeight);
       } else {
         // Mobile/portrait: moderate zoom (55% height contain) + blurred background fill
         const targetHeight = canvasHeight * 0.55;
