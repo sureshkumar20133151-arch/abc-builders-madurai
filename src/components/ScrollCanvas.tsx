@@ -14,9 +14,6 @@ const VIDEO_FRAMES = {
   3: 192
 } as const;
 
-const STEP = 2; // load every 2nd frame
-const TOTAL_FRAMES = (VIDEO_FRAMES[1] / STEP) + (VIDEO_FRAMES[2] / STEP) + (VIDEO_FRAMES[3] / STEP); // 96 + 96 + 96 = 288
-
 export default function ScrollCanvas() {
   const { locale, t } = useLanguage();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -25,6 +22,7 @@ export default function ScrollCanvas() {
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
   const [showLoader, setShowLoader] = useState(true);
+  const [totalFramesCount, setTotalFramesCount] = useState(288);
   
   // Track active section for progress dots
   const [activeStep, setActiveStep] = useState(0); // 0 = Design, 1 = Build, 2 = Dream
@@ -40,14 +38,19 @@ export default function ScrollCanvas() {
 
   // Preload Images
   useEffect(() => {
+    const isMobile = window.innerWidth < 768;
+    const dynamicStep = isMobile ? 4 : 2; // Load fewer frames on mobile to save RAM (144 vs 288 frames)
+    const dynamicTotalFrames = (VIDEO_FRAMES[1] / dynamicStep) + (VIDEO_FRAMES[2] / dynamicStep) + (VIDEO_FRAMES[3] / dynamicStep);
+    setTotalFramesCount(dynamicTotalFrames);
+
     const loadedImages: HTMLImageElement[] = [];
     let loadedCount = 0;
 
     const onLoad = () => {
       loadedCount++;
-      const progress = Math.round((loadedCount / TOTAL_FRAMES) * 100);
+      const progress = Math.round((loadedCount / dynamicTotalFrames) * 100);
       setLoadingProgress(progress);
-      if (loadedCount === TOTAL_FRAMES) {
+      if (loadedCount === dynamicTotalFrames) {
         setIsLoaded(true);
       }
     };
@@ -59,9 +62,9 @@ export default function ScrollCanvas() {
     // Populate arrays dynamically based on video lengths
     for (let v = 1; v <= 3; v++) {
       const framesCount = VIDEO_FRAMES[v as 1 | 2 | 3];
-      const subsetSize = framesCount / STEP;
+      const subsetSize = framesCount / dynamicStep;
       for (let i = 0; i < subsetSize; i++) {
-        const actualFrameNum = i * STEP + 1;
+        const actualFrameNum = i * dynamicStep + 1;
         const paddedNum = actualFrameNum.toString().padStart(3, "0");
         const url = `/assets/video${v}/ezgif-frame-${paddedNum}.jpg`;
         const img = document.createElement("img");
@@ -87,18 +90,27 @@ export default function ScrollCanvas() {
 
     // Handle canvas sizing
     const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      
+      // Avoid height jumps on mobile browsers when address bar shows/hides
+      const isMobile = window.innerWidth < 768;
+      if (isMobile && canvas.width === width && Math.abs(canvas.height - height) < 100) {
+        return;
+      }
+      
+      canvas.width = width;
+      canvas.height = height;
       drawFrame(scrollIndexObj.frame);
     };
 
     const drawFrame = (index: number) => {
-      const idx = Math.min(Math.max(0, Math.floor(index)), TOTAL_FRAMES - 1);
+      const idx = Math.min(Math.max(0, Math.floor(index)), totalFramesCount - 1);
       let img = images[idx] as HTMLImageElement | undefined;
       if (!img || !img.complete) {
         // Fallback to closest loaded image to avoid flicker
         let found = false;
-        for (let offset = 1; offset < TOTAL_FRAMES; offset++) {
+        for (let offset = 1; offset < totalFramesCount; offset++) {
           const prevIdx = idx - offset;
           const nextIdx = idx + offset;
           if (prevIdx >= 0 && images[prevIdx] && images[prevIdx].complete) {
@@ -106,7 +118,7 @@ export default function ScrollCanvas() {
             found = true;
             break;
           }
-          if (nextIdx < TOTAL_FRAMES && images[nextIdx] && images[nextIdx].complete) {
+          if (nextIdx < totalFramesCount && images[nextIdx] && images[nextIdx].complete) {
             img = images[nextIdx];
             found = true;
             break;
@@ -127,25 +139,44 @@ export default function ScrollCanvas() {
 
       const imgRatio = imgWidth / imgHeight;
       const canvasRatio = canvasWidth / canvasHeight;
-      let drawWidth = canvasWidth;
-      let drawHeight = canvasHeight;
-      let offsetX = 0;
-      let offsetY = 0;
 
       if (canvasRatio > imgRatio) {
-        // Desktop/wide: canvas wider than image
-        drawHeight = canvasWidth / imgRatio;
-        offsetY = (canvasHeight - drawHeight) / 2;
+        // Desktop/wide: normal cover scaling (centered vertically)
+        const drawHeight = canvasWidth / imgRatio;
+        const offsetY = (canvasHeight - drawHeight) / 2;
+        ctx.drawImage(img, 0, offsetY, canvasWidth, drawHeight);
       } else {
-        // Mobile/narrow: cover — fill height, center crop sides
-        drawWidth = canvasHeight * imgRatio;
-        offsetX = (canvasWidth - drawWidth) / 2;
-      }
+        // Mobile/portrait: contain building + blurred environment background
+        ctx.save();
+        ctx.filter = "blur(12px)";
+        // Draw cover background
+        const bgWidth = canvasHeight * imgRatio;
+        const bgOffsetX = (canvasWidth - bgWidth) / 2;
+        ctx.drawImage(img, bgOffsetX, 0, bgWidth, canvasHeight);
+        ctx.restore();
 
-      ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+        // Dark overlay on top of blurred background
+        ctx.fillStyle = "rgba(0, 0, 0, 0.45)";
+        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+        // Draw crisp contained building on top
+        const drawHeight = canvasWidth / imgRatio;
+        const offsetY = (canvasHeight - drawHeight) / 2;
+        ctx.drawImage(img, 0, offsetY, canvasWidth, drawHeight);
+      }
     };
 
     window.addEventListener("resize", resizeCanvas);
+    
+    // Refresh ScrollTrigger on orientation change to recalculate pin positions
+    const handleOrientationChange = () => {
+      setTimeout(() => {
+        resizeCanvas();
+        ScrollTrigger.refresh();
+      }, 200);
+    };
+    window.addEventListener("orientationchange", handleOrientationChange);
+    
     resizeCanvas();
     
     // Timeline to scrub frames
@@ -172,7 +203,7 @@ export default function ScrollCanvas() {
 
     // Scrub frames
     timeline.to(scrollIndexObj, {
-      frame: TOTAL_FRAMES - 1,
+      frame: totalFramesCount - 1,
       ease: "none",
       onUpdate: () => {
         drawFrame(scrollIndexObj.frame);
@@ -184,11 +215,12 @@ export default function ScrollCanvas() {
 
     return () => {
       window.removeEventListener("resize", resizeCanvas);
+      window.removeEventListener("orientationchange", handleOrientationChange);
       timeline.kill();
       const trigger = ScrollTrigger.getById("hero-scroll-canvas-trigger");
       if (trigger) trigger.kill();
     };
-  }, [isLoaded, images]);
+  }, [isLoaded, images, totalFramesCount]);
 
   // Handle dot click transitions
   const scrollToPercent = (percent: number) => {
@@ -200,7 +232,7 @@ export default function ScrollCanvas() {
   };
 
   return (
-    <div ref={containerRef} className="relative w-full h-screen bg-black overflow-hidden select-none">
+    <div ref={containerRef} className="relative w-full h-screen h-[100dvh] bg-black overflow-hidden select-none">
       {/* Premium Loader overlay for assets */}
       {showLoader && (
         <div
@@ -254,7 +286,7 @@ export default function ScrollCanvas() {
           </span>
           {/* Line 2 & 3 */}
           <h1
-            className="font-display text-white text-5xl md:text-8xl leading-none font-medium flex flex-col tracking-tight"
+            className="font-display text-white text-3xl sm:text-5xl md:text-8xl leading-none font-medium flex flex-col tracking-tight"
             style={{
               opacity: scrollProgress >= 3 ? 1 : 0,
               transform: `scale(${scrollProgress >= 3 ? 1 : 0.96})`,
@@ -277,7 +309,7 @@ export default function ScrollCanvas() {
 
           {/* CTA Buttons */}
           <div
-            className="flex items-center gap-4 mt-8 pointer-events-auto"
+            className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 mt-8 pointer-events-auto w-full sm:w-auto"
             style={{
               opacity: scrollProgress >= 8 ? 1 : 0,
               transition: "opacity 0.5s ease 0.4s",
@@ -285,13 +317,13 @@ export default function ScrollCanvas() {
           >
             <Link
               href={`/${locale}/projects`}
-              className="bg-brand-teak hover:bg-brand-teal text-text-primary font-semibold px-6 py-3 text-xs uppercase tracking-widest transition-all duration-300 cursor-pointer"
+              className="w-full sm:w-auto text-center bg-brand-teak hover:bg-brand-teal text-text-primary font-semibold px-6 py-3 text-xs uppercase tracking-widest transition-all duration-300 cursor-pointer"
             >
               {t.hero.ctaProjects}
             </Link>
             <Link
               href={`/${locale}/services`}
-              className="border border-white hover:bg-white hover:text-black text-white font-semibold px-6 py-3 text-xs uppercase tracking-widest transition-all duration-300 cursor-pointer"
+              className="w-full sm:w-auto text-center border border-white hover:bg-white hover:text-black text-white font-semibold px-6 py-3 text-xs uppercase tracking-widest transition-all duration-300 cursor-pointer"
             >
               {t.hero.ctaEstimate}
             </Link>
@@ -309,13 +341,13 @@ export default function ScrollCanvas() {
 
       {/* TEXT OVERLAYS - VIDEO 2 SEGMENT (33% to 66% scroll) */}
       <div
-        className="absolute inset-0 flex items-center justify-end p-8 md:p-24 pointer-events-none"
+        className="absolute inset-0 flex items-center justify-center sm:justify-end p-8 md:p-24 pointer-events-none"
         style={{
           opacity: scrollProgress >= 48 && scrollProgress <= 60 ? 1 : 0,
           transition: "opacity 0.5s ease",
         }}
       >
-        <div className="text-right max-w-md">
+        <div className="text-center sm:text-right max-w-md w-full">
           <span className="font-display italic text-2xl md:text-4xl text-white/90">
             {t.hero.everyDetail}
           </span>
@@ -331,10 +363,10 @@ export default function ScrollCanvas() {
         }}
       >
         <div className="max-w-2xl flex flex-col gap-2">
-          <span className="font-display italic text-4xl md:text-6xl text-night-glow">
+          <span className="font-display italic text-2xl sm:text-4xl md:text-6xl text-night-glow">
             {t.hero.thisCouldBe}
           </span>
-          <span className="font-display text-white text-5xl md:text-8xl tracking-tight leading-none uppercase font-semibold">
+          <span className="font-display text-white text-4xl sm:text-5xl md:text-8xl tracking-tight leading-none uppercase font-semibold">
             {t.hero.yourHome}
           </span>
           <span className="font-ui text-xs text-night-glow/70 mt-6 tracking-widest uppercase">
@@ -343,8 +375,8 @@ export default function ScrollCanvas() {
         </div>
       </div>
 
-      {/* Progress Dots Indicator (Bottom-Right) */}
-      <div className="absolute bottom-10 right-10 flex items-center gap-4 z-20">
+      {/* Progress Dots Indicator (Bottom-Center on Mobile, Bottom-Right on Desktop) */}
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 md:translate-x-0 md:left-auto md:bottom-10 md:right-10 flex items-center gap-2 md:gap-4 z-20">
         {[
           { name: t.hero.design, percent: 0.15 },
           { name: t.hero.build, percent: 0.5 },
@@ -353,10 +385,10 @@ export default function ScrollCanvas() {
           <button
             key={step.name}
             onClick={() => scrollToPercent(step.percent)}
-            className="flex flex-col items-end gap-1 group cursor-pointer"
+            className="flex flex-col items-center md:items-end gap-1 group cursor-pointer p-2"
           >
             <span
-              className={`w-3 h-3 rounded-full border transition-all duration-300 ${
+              className={`w-4 h-4 md:w-3 md:h-3 rounded-full border transition-all duration-300 ${
                 activeStep === idx
                   ? "bg-brand-teak border-transparent scale-125"
                   : "border-white/50 bg-transparent group-hover:bg-white/30"
@@ -364,7 +396,7 @@ export default function ScrollCanvas() {
             />
             <span
               className={`font-ui text-[9px] uppercase tracking-widest transition-opacity duration-300 ${
-                activeStep === idx ? "opacity-100 text-brand-teak" : "opacity-0 group-hover:opacity-75 text-white"
+                activeStep === idx ? "opacity-100 text-brand-teak" : "opacity-0 md:group-hover:opacity-75 text-white"
               }`}
             >
               {step.name}
