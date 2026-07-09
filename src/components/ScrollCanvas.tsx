@@ -265,7 +265,7 @@ export default function ScrollCanvas() {
       {/* Render Canvas */}
       <canvas
         ref={canvasRef}
-        className="absolute inset-0 w-full h-full object-cover"
+        className="absolute inset-0 w-full h-full"
         style={{ opacity: isLoaded ? 1 : 0, transition: "opacity 0.5s ease" }}
       />
 
