@@ -143,12 +143,27 @@ export default function ScrollCanvas() {
       const canvasRatio = canvasWidth / canvasHeight;
 
       if (canvasRatio > imgRatio) {
-        // Desktop/wide: normal cover scaling (centered vertically, preserving aspect ratio)
-        const drawWidth = canvasWidth;
-        const drawHeight = canvasWidth / imgRatio;
-        const offsetX = 0;
-        const offsetY = (canvasHeight - drawHeight) / 2;
-        ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+        // Desktop/wide: 100% height contain (fully visible building) + blurred side backgrounds
+        const targetHeight = canvasHeight;
+        const targetWidth = canvasHeight * imgRatio;
+
+        ctx.save();
+        ctx.filter = "blur(16px)";
+        // Draw cover background (fills 100% of canvas)
+        const bgWidth = canvasWidth;
+        const bgHeight = canvasWidth / imgRatio;
+        const bgOffsetY = (canvasHeight - bgHeight) / 2;
+        ctx.drawImage(img, 0, bgOffsetY, bgWidth, bgHeight);
+        ctx.restore();
+
+        // Dark overlay on top of blurred background
+        ctx.fillStyle = "rgba(0, 0, 0, 0.45)";
+        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+        // Draw centered crisp building on top (100% height)
+        const offsetX = (canvasWidth - targetWidth) / 2;
+        const offsetY = 0;
+        ctx.drawImage(img, offsetX, offsetY, targetWidth, targetHeight);
       } else {
         // Mobile/portrait: moderate zoom (55% height contain) + blurred background fill
         const targetHeight = canvasHeight * 0.55;
