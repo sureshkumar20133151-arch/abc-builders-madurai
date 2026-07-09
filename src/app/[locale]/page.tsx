@@ -376,7 +376,7 @@ export default function HomePage() {
       <section className="relative py-32 bg-brand-night text-white text-center overflow-hidden">
         {/* Nightlit frame background */}
         <img
-          src="/assets/video3/ezgif-frame-230.jpg"
+          src="/assets/video3/ezgif-frame-192.jpg"
           alt="Completed house lit up at night"
           className="absolute inset-0 w-full h-full object-cover opacity-35"
         />
