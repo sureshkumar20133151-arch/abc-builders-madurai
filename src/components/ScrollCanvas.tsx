@@ -146,7 +146,8 @@ export default function ScrollCanvas() {
         const offsetY = (canvasHeight - drawHeight) / 2;
         ctx.drawImage(img, 0, offsetY, canvasWidth, drawHeight);
       } else {
-        // Mobile/portrait: contain building + blurred environment background
+        // Mobile/portrait: contain building + blurred environment background + dynamic zoom
+        const ZOOM = 1.35; // Scale factor to crop out side margins and zoom building on mobile
         ctx.save();
         ctx.filter = "blur(12px)";
         // Draw cover background
@@ -159,10 +160,12 @@ export default function ScrollCanvas() {
         ctx.fillStyle = "rgba(0, 0, 0, 0.45)";
         ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
-        // Draw crisp contained building on top
-        const drawHeight = canvasWidth / imgRatio;
+        // Draw crisp zoomed building on top (scaling width & height, centering)
+        const drawWidth = canvasWidth * ZOOM;
+        const drawHeight = (canvasWidth * ZOOM) / imgRatio;
+        const offsetX = (canvasWidth - drawWidth) / 2;
         const offsetY = (canvasHeight - drawHeight) / 2;
-        ctx.drawImage(img, 0, offsetY, canvasWidth, drawHeight);
+        ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
       }
     };
 
