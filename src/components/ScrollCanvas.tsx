@@ -147,7 +147,7 @@ export default function ScrollCanvas() {
         ctx.drawImage(img, 0, offsetY, canvasWidth, drawHeight);
       } else {
         // Mobile/portrait: contain building + blurred environment background + dynamic zoom
-        const ZOOM = 1.35; // Scale factor to crop out side margins and zoom building on mobile
+        const ZOOM = 1.5; // Scale factor to crop out side margins and zoom building on mobile
         ctx.save();
         ctx.filter = "blur(12px)";
         // Draw cover background
