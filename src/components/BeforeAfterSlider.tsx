@@ -17,7 +17,7 @@ export default function BeforeAfterSlider({
   const [sliderPos, setSliderPos] = useState(50);
 
   return (
-    <div className="relative aspect-video w-full overflow-hidden select-none bg-surface-2 border border-brand-teak/20">
+    <div className="relative aspect-video w-full overflow-hidden select-none bg-surface-2 border border-brand-teak/20" style={{ touchAction: 'none' }}>
       {/* Before Image (Background) */}
       <img
         src={beforeImg}
@@ -51,7 +51,7 @@ export default function BeforeAfterSlider({
         style={{ left: `${sliderPos}%` }}
       >
         {/* Slider Handle */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-brand-teak text-white rounded-full flex items-center justify-center shadow-lg border border-white/20 text-xs font-bold">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-brand-teak text-white rounded-full flex items-center justify-center shadow-lg border border-white/20 text-xs font-bold">
           ↔
         </div>
       </div>
@@ -63,7 +63,15 @@ export default function BeforeAfterSlider({
         max="100"
         value={sliderPos}
         onChange={(e) => setSliderPos(Number(e.target.value))}
+        onTouchMove={(e) => {
+          const touch = e.touches[0];
+          const rect = e.currentTarget.getBoundingClientRect();
+          const x = touch.clientX - rect.left;
+          const pct = Math.min(100, Math.max(0, (x / rect.width) * 100));
+          setSliderPos(pct);
+        }}
         className="absolute inset-0 w-full h-full opacity-0 cursor-ew-resize z-20"
+        style={{ touchAction: 'none' }}
         aria-label="Before after comparison slider"
       />
     </div>

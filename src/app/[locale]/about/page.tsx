@@ -7,6 +7,16 @@ import { Award, Briefcase, ChevronDown, FileText, Landmark, PhoneCall, ShieldChe
 export default function AboutPage() {
   const { locale, t } = useLanguage();
   const [openRole, setOpenRole] = useState<number | null>(null);
+  const [flippedCards, setFlippedCards] = useState<Set<number>>(new Set());
+
+  const toggleCard = (idx: number) => {
+    setFlippedCards(prev => {
+      const next = new Set(prev);
+      if (next.has(idx)) next.delete(idx);
+      else next.add(idx);
+      return next;
+    });
+  };
 
   const toggleRole = (index: number) => {
     setOpenRole(openRole === index ? null : index);
@@ -36,7 +46,7 @@ export default function AboutPage() {
   return (
     <div className="relative w-full">
       {/* 1. Hero Section */}
-      <section className="relative h-[55vh] flex items-center justify-center overflow-hidden">
+      <section className="relative h-[40vh] md:h-[55vh] flex items-center justify-center overflow-hidden">
         {/* Background Image: Video 1, second 0 frame (Blueprint on desk) */}
         <div
           className="absolute inset-0 bg-cover bg-center filter blur-[2px] scale-105"
@@ -120,8 +130,11 @@ export default function AboutPage() {
               ];
 
               return (
-                <div key={idx} className="group [perspective:1000px] h-[360px] w-full cursor-pointer">
-                  <div className="relative h-full w-full transition-all duration-500 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
+                <div key={idx} className="group [perspective:1000px] min-h-[300px] md:h-[360px] w-full cursor-pointer" onClick={() => toggleCard(idx)}>
+                  <div
+                    className="relative h-full w-full transition-all duration-500 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]"
+                    style={flippedCards.has(idx) ? { transform: 'rotateY(180deg)' } : undefined}
+                  >
                     
                     {/* Front Side */}
                     <div className="absolute inset-0 h-full w-full bg-surface-0 p-6 flex flex-col justify-between border border-border-subtle [backface-visibility:hidden]">
@@ -205,7 +218,7 @@ export default function AboutPage() {
             {t.about.certificationsSub}
           </p>
 
-          <div className="grid grid-cols-2 lg:grid-cols-6 gap-6 max-w-5xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 max-w-5xl mx-auto">
             {[
               { title: "TNRERA Approved", ref: "TN/20/Building/0129", icon: ShieldCheck },
               { title: "CMDA License", ref: "CMDA/RE/Gr-I/09/23", icon: Landmark },

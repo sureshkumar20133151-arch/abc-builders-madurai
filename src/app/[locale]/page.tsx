@@ -50,9 +50,9 @@ function StatCard({ number, label, suffix = "" }: { number: number; label: strin
   return (
     <div
       ref={cardRef}
-      className="bg-surface-0 border border-brand-teak/30 p-8 flex flex-col justify-between min-h-[160px] text-left hover:border-brand-teak transition-all duration-300 select-none"
+      className="bg-surface-0 border border-brand-teak/30 p-5 md:p-8 flex flex-col justify-between min-h-[160px] text-left hover:border-brand-teak transition-all duration-300 select-none"
     >
-      <span className="font-display text-4xl md:text-5xl font-semibold text-brand-teak mb-2">
+      <span className="font-display text-3xl md:text-4xl lg:text-5xl font-semibold text-brand-teak mb-2">
         {count}
         {suffix}
       </span>
@@ -102,16 +102,16 @@ export default function HomePage() {
             <h2 className="font-display text-3xl md:text-5xl font-medium text-text-primary tracking-tight mb-6">
               {t.hero.ready}
             </h2>
-            <div className="flex justify-center items-center gap-4">
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-4">
               <Link
                 href={`/${locale}/contact`}
-                className="bg-brand-teak hover:bg-brand-teal text-surface-0 font-semibold px-6 py-3.5 text-xs uppercase tracking-widest transition-all duration-300"
+                className="w-full sm:w-auto bg-brand-teak hover:bg-brand-teal text-surface-0 font-semibold px-6 py-3.5 text-xs uppercase tracking-widest transition-all duration-300"
               >
                 {t.hero.ctaEstimate}
               </Link>
               <Link
                 href={`/${locale}/projects`}
-                className="border border-brand-teak hover:bg-brand-teak hover:text-white text-brand-teak font-semibold px-6 py-3.5 text-xs uppercase tracking-widest transition-all duration-300"
+                className="w-full sm:w-auto border border-brand-teak hover:bg-brand-teak hover:text-white text-brand-teak font-semibold px-6 py-3.5 text-xs uppercase tracking-widest transition-all duration-300"
               >
                 {t.hero.ctaProjects}
               </Link>
@@ -142,7 +142,7 @@ export default function HomePage() {
             {/* Card 1: Design */}
             <Link
               href={`/${locale}/services`}
-              className="relative aspect-video lg:aspect-[4/5] overflow-hidden group select-none block"
+              className="relative aspect-video lg:aspect-[4/5] overflow-hidden group select-none block active:scale-[0.98] transition-transform"
             >
               <img
                 src="/assets/services_design.png"
@@ -170,7 +170,7 @@ export default function HomePage() {
             {/* Card 2: Structure */}
             <Link
               href={`/${locale}/services`}
-              className="relative aspect-video lg:aspect-[4/5] overflow-hidden group select-none block"
+              className="relative aspect-video lg:aspect-[4/5] overflow-hidden group select-none block active:scale-[0.98] transition-transform"
             >
               <img
                 src="/assets/services_construction.png"
@@ -198,7 +198,7 @@ export default function HomePage() {
             {/* Card 3: Finishing */}
             <Link
               href={`/${locale}/services`}
-              className="relative aspect-video lg:aspect-[4/5] overflow-hidden group select-none block"
+              className="relative aspect-video lg:aspect-[4/5] overflow-hidden group select-none block active:scale-[0.98] transition-transform"
             >
               <img
                 src="/assets/services_finished.png"
@@ -289,7 +289,7 @@ export default function HomePage() {
                   </div>
                   <Link
                     href={`/${locale}/projects`}
-                    className="text-xs text-brand-teak border-b border-transparent group-hover:border-brand-teak transition-all duration-300 font-semibold tracking-wider uppercase flex items-center gap-1"
+                    className="py-1 text-xs text-brand-teak border-b border-transparent group-hover:border-brand-teak transition-all duration-300 font-semibold tracking-wider uppercase flex items-center gap-1"
                   >
                     View Project
                   </Link>
@@ -314,7 +314,7 @@ export default function HomePage() {
             {testimonials.map((t, idx) => (
               <div
                 key={idx}
-                className="bg-surface-0 border border-border-subtle p-8 flex flex-col justify-between text-left hover:border-brand-teak/50 transition-colors"
+                className="bg-surface-0 border border-border-subtle p-8 flex flex-col justify-between text-left hover:border-brand-teak/50 transition-colors active:scale-[0.99]"
               >
                 <div>
                   <div className="flex gap-1 mb-4 text-brand-teak">
@@ -339,7 +339,7 @@ export default function HomePage() {
           </div>
 
           {/* Google rating badge */}
-          <div className="mt-12 inline-flex items-center gap-2 border border-border-medium rounded-full px-6 py-2.5 bg-surface-0 shadow-sm text-xs font-semibold">
+          <div className="mt-12 inline-flex items-center gap-2 border border-border-medium rounded-full px-6 py-2.5 bg-surface-0 shadow-sm text-[10px] sm:text-xs font-semibold">
             <span className="text-brand-teak font-bold flex items-center gap-1">
               4.8 <Star className="w-4 h-4 fill-current" />
             </span>

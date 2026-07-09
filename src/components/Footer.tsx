@@ -12,11 +12,11 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-[#1A1818] text-white/90 border-t-3 border-brand-teak pt-16 pb-8 relative overflow-hidden select-none">
+    <footer className="bg-[#1A1818] text-white/90 border-t-3 border-brand-teak pt-16 pb-[calc(2rem+env(safe-area-inset-bottom))] relative overflow-hidden select-none">
       {/* Blueprint Grid Overlay */}
       <div className="absolute inset-0 blueprint-grid opacity-[0.03] pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           {/* Brand Col */}
           <div className="flex flex-col gap-4">
@@ -35,7 +35,7 @@ export default function Footer() {
             <div className="flex items-center gap-4 mt-4">
               <a
                 href="#"
-                className="p-2 bg-white/5 hover:bg-brand-teak rounded-full transition-colors text-white/80 hover:text-white"
+                className="p-2.5 md:p-2 bg-white/5 hover:bg-brand-teak rounded-full transition-colors text-white/80 hover:text-white"
                 aria-label="Facebook"
               >
                 <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
@@ -44,7 +44,7 @@ export default function Footer() {
               </a>
               <a
                 href="#"
-                className="p-2 bg-white/5 hover:bg-brand-teak rounded-full transition-colors text-white/80 hover:text-white"
+                className="p-2.5 md:p-2 bg-white/5 hover:bg-brand-teak rounded-full transition-colors text-white/80 hover:text-white"
                 aria-label="Instagram"
               >
                 <svg className="w-4 h-4 fill-none stroke-current" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
@@ -55,7 +55,7 @@ export default function Footer() {
               </a>
               <a
                 href="#"
-                className="p-2 bg-white/5 hover:bg-brand-teak rounded-full transition-colors text-white/80 hover:text-white"
+                className="p-2.5 md:p-2 bg-white/5 hover:bg-brand-teak rounded-full transition-colors text-white/80 hover:text-white"
                 aria-label="Youtube"
               >
                 <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
@@ -64,7 +64,7 @@ export default function Footer() {
               </a>
               <a
                 href="#"
-                className="p-2 bg-white/5 hover:bg-brand-teak rounded-full transition-colors text-white/80 hover:text-white"
+                className="p-2.5 md:p-2 bg-white/5 hover:bg-brand-teak rounded-full transition-colors text-white/80 hover:text-white"
                 aria-label="LinkedIn"
               >
                 <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
@@ -152,7 +152,7 @@ export default function Footer() {
           {/* Scroll to Top */}
           <button
             onClick={scrollToTop}
-            className="p-3 bg-white/5 hover:bg-brand-teak rounded-full transition-all border border-white/10 hover:border-transparent cursor-pointer group"
+            className="p-3.5 bg-white/5 hover:bg-brand-teak rounded-full transition-all border border-white/10 hover:border-transparent cursor-pointer group"
             aria-label="Scroll to top"
           >
             <ArrowUp className="w-4 h-4 text-white/80 group-hover:translate-y-[-2px] transition-transform" />

@@ -90,7 +90,7 @@ export default function ContactPage() {
   return (
     <div className="relative w-full">
       {/* 1. Hero Section */}
-      <section className="relative h-[65vh] flex items-center justify-center overflow-hidden">
+      <section className="relative h-[45vh] md:h-[65vh] flex items-center justify-center overflow-hidden">
         {/* Background Image: Generated Twilight Tropical Bungalow render */}
         <div
           className="absolute inset-0 bg-cover bg-center"
@@ -116,7 +116,7 @@ export default function ContactPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start max-w-6xl mx-auto">
             
             {/* Left: Smart Enquiry Form Card (55%) */}
-            <div id="enquiry-form-card" className="lg:col-span-7 bg-surface-0 border border-brand-teak/20 p-8 md:p-10 select-none text-left shadow-sm">
+            <div id="enquiry-form-card" className="lg:col-span-7 bg-surface-0 border border-brand-teak/20 p-5 md:p-8 lg:p-10 select-none text-left shadow-sm">
               <h2 className="font-display text-2xl font-semibold text-text-primary mb-2">
                 {t.contact.formTitle}
               </h2>
@@ -428,6 +428,7 @@ export default function ContactPage() {
 
               {/* Hub Node 1: Chennai (North) */}
               <g className="cursor-pointer group/node" onClick={() => handleMapNodeClick("Chennai")}>
+                <circle cx="280" cy="100" r="22" fill="transparent" className="pointer-events-auto" />
                 <circle cx="280" cy="100" r="10" fill="var(--brand-teal)" className="opacity-30 group-hover/node:scale-150 transition-transform" />
                 <circle cx="280" cy="100" r="5" fill="var(--brand-teal)" />
                 <text x="295" y="104" className="font-sans font-bold text-[10px] fill-[var(--bp-ink)] stroke-none">Chennai</text>
@@ -435,6 +436,7 @@ export default function ContactPage() {
 
               {/* Hub Node 2: Madurai HQ (South) */}
               <g className="cursor-pointer group/node" onClick={() => handleMapNodeClick("Madurai")}>
+                <circle cx="220" cy="240" r="22" fill="transparent" className="pointer-events-auto" />
                 <circle cx="220" cy="240" r="14" fill="var(--brand-teak)" className="opacity-35 group-hover/node:scale-150 transition-transform" />
                 <circle cx="220" cy="240" r="7" fill="var(--brand-teak)" />
                 <text x="200" y="260" className="font-sans font-bold text-[10px] fill-brand-teak stroke-none">Madurai HQ</text>
@@ -442,6 +444,7 @@ export default function ContactPage() {
 
               {/* Hub Node 3: Coimbatore (West) */}
               <g className="cursor-pointer group/node" onClick={() => handleMapNodeClick("Coimbatore")}>
+                <circle cx="160" cy="280" r="22" fill="transparent" className="pointer-events-auto" />
                 <circle cx="160" cy="280" r="10" fill="var(--brand-teal)" className="opacity-30 group-hover/node:scale-150 transition-transform" />
                 <circle cx="160" cy="280" r="5" fill="var(--brand-teal)" />
                 <text x="105" y="284" className="font-sans font-bold text-[10px] fill-[var(--bp-ink)] stroke-none">Coimbatore</text>
@@ -449,6 +452,7 @@ export default function ContactPage() {
 
               {/* Hub Node 4: Trichy (Central) */}
               <g className="cursor-pointer group/node" onClick={() => handleMapNodeClick("Trichy")}>
+                <circle cx="220" cy="180" r="22" fill="transparent" className="pointer-events-auto" />
                 <circle cx="220" cy="180" r="8" fill="var(--brand-teal)" className="opacity-30 group-hover/node:scale-150 transition-transform" />
                 <circle cx="220" cy="180" r="4" fill="var(--brand-teal)" />
                 <text x="232" y="184" className="font-sans font-bold text-[9px] fill-[var(--bp-ink)] stroke-none">Trichy</text>

@@ -43,6 +43,21 @@ export default function Navbar() {
     localStorage.setItem("theme", nextTheme);
   };
 
+  // Scroll Lock when Mobile Drawer is Open
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = "hidden";
+      document.body.classList.add("no-scroll");
+    } else {
+      document.body.style.overflow = "";
+      document.body.classList.remove("no-scroll");
+    }
+    return () => {
+      document.body.style.overflow = "";
+      document.body.classList.remove("no-scroll");
+    };
+  }, [mobileOpen]);
+
   const navLinks = [
     { name: t.nav.home, href: `/${locale}` },
     { name: t.nav.about, href: `/${locale}/about` },
@@ -74,7 +89,7 @@ export default function Navbar() {
       <nav
         className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
           scrolled
-            ? "bg-surface-0/80 backdrop-blur-md border-b border-border-subtle py-3"
+            ? "bg-surface-0/95 backdrop-blur-lg border-b border-border-subtle py-3 shadow-sm"
             : "bg-transparent py-5"
         }`}
       >
@@ -100,7 +115,9 @@ export default function Navbar() {
                 className={`font-ui text-xs tracking-wider uppercase transition-colors ${
                   isActive(link.href)
                     ? "text-brand-teak font-semibold"
-                    : "text-brand-teak/80 hover:text-brand-teak"
+                    : useWhiteText
+                      ? "text-white/80 hover:text-white"
+                      : "text-text-secondary hover:text-brand-teak"
                 }`}
               >
                 {link.name}
@@ -178,72 +195,83 @@ export default function Navbar() {
 
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className={`p-1.5 border rounded-full transition-colors ${
+              className={`p-1.5 border rounded-full z-50 transition-colors ${
                 useWhiteText ? "border-white/20 text-white" : "border-border-subtle text-text-primary"
               }`}
             >
-              {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {mobileOpen ? <X className="w-5 h-5 text-text-primary" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
         </div>
       </nav>
 
+      {/* Backdrop overlay for mobile drawer */}
+      <div
+        onClick={() => setMobileOpen(false)}
+        className={`fixed inset-0 bg-black/40 backdrop-blur-sm z-30 lg:hidden transition-opacity duration-300 ${
+          mobileOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        }`}
+      />
+
       {/* Mobile Menu Drawer Overlay */}
-      {mobileOpen && (
-        <div className="fixed inset-0 bg-surface-0 z-30 flex flex-col p-8 pt-24 lg:hidden">
-          <div className="flex flex-col gap-6 my-6">
-            {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                onClick={() => setMobileOpen(false)}
-                className={`font-display text-2xl font-medium tracking-tight ${
-                  isActive(link.href) ? "text-brand-teak" : "text-brand-teak/80"
-                }`}
-              >
-                {link.name}
-              </Link>
-            ))}
-          </div>
-
-          <div className="mt-auto border-t border-border-subtle pt-6 flex flex-col gap-6">
-            {/* Mobile Locale Switch */}
-            <div className="flex items-center justify-between">
-              <span className="font-ui text-sm text-text-secondary">Language / மொழி:</span>
-              <div className="flex items-center gap-3 border border-border-subtle rounded-full px-4 py-1.5">
-                <button
-                  onClick={() => {
-                    switchLanguage("en");
-                    setMobileOpen(false);
-                  }}
-                  className={`text-sm ${locale === "en" ? "font-bold text-brand-teak" : ""}`}
-                >
-                  English
-                </button>
-                <span className="text-border-medium">|</span>
-                <button
-                  onClick={() => {
-                    switchLanguage("ta");
-                    setMobileOpen(false);
-                  }}
-                  className={`text-sm ${locale === "ta" ? "font-bold text-brand-teak" : ""}`}
-                >
-                  தமிழ்
-                </button>
-              </div>
-            </div>
-
-            {/* Mobile CTA */}
+      <div
+        className={`fixed inset-y-0 right-0 w-[80vw] max-w-sm bg-surface-0 z-30 flex flex-col p-8 pt-24 pb-8 lg:hidden transition-transform duration-300 ease-in-out shadow-2xl ${
+          mobileOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        <div className="flex flex-col gap-5 my-6 overflow-y-auto">
+          {navLinks.map((link) => (
             <Link
-              href={`/${locale}/contact`}
+              key={link.name}
+              href={link.href}
               onClick={() => setMobileOpen(false)}
-              className="bg-brand-teak hover:bg-brand-teal text-surface-0 w-full py-3.5 text-center text-xs uppercase tracking-widest font-semibold transition-all duration-300"
+              className={`font-display text-2xl font-medium tracking-tight flex items-center gap-3 transition-colors ${
+                isActive(link.href) ? "text-brand-teak" : "text-text-secondary hover:text-brand-teak"
+              }`}
             >
-              {t.nav.getEstimate}
+              {isActive(link.href) && <span className="w-1.5 h-1.5 rounded-full bg-brand-teak" />}
+              {link.name}
             </Link>
-          </div>
+          ))}
         </div>
-      )}
+
+        <div className="mt-auto border-t border-border-subtle pt-6 flex flex-col gap-6">
+          {/* Mobile Locale Switch */}
+          <div className="flex items-center justify-between">
+            <span className="font-ui text-sm text-text-secondary">Language / மொழி:</span>
+            <div className="flex items-center gap-3 border border-border-subtle rounded-full px-4 py-1.5">
+              <button
+                onClick={() => {
+                  switchLanguage("en");
+                  setMobileOpen(false);
+                }}
+                className={`text-sm ${locale === "en" ? "font-bold text-brand-teak" : ""}`}
+              >
+                English
+              </button>
+              <span className="text-border-medium">|</span>
+              <button
+                onClick={() => {
+                  switchLanguage("ta");
+                  setMobileOpen(false);
+                }}
+                className={`text-sm ${locale === "ta" ? "font-bold text-brand-teak" : ""}`}
+              >
+                தமிழ்
+              </button>
+            </div>
+          </div>
+
+          {/* Mobile CTA */}
+          <Link
+            href={`/${locale}/contact`}
+            onClick={() => setMobileOpen(false)}
+            className="bg-brand-teak hover:bg-brand-teal text-surface-0 w-full py-3.5 text-center text-xs uppercase tracking-widest font-semibold transition-all duration-300"
+          >
+            {t.nav.getEstimate}
+          </Link>
+        </div>
+      </div>
     </>
   );
 }

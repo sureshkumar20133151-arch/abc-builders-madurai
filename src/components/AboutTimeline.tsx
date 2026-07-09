@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -10,8 +10,21 @@ export default function AboutTimeline() {
   const { t } = useLanguage();
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollSectionRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
+    const checkMobile = () => window.innerWidth < 768;
+    setIsMobile(checkMobile());
+
+    const handleResize = () => setIsMobile(checkMobile());
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  useEffect(() => {
+    // Only initialize GSAP horizontal scroll on desktop
+    if (isMobile) return;
+
     const scrollSection = scrollSectionRef.current;
     const container = containerRef.current;
     if (!scrollSection || !container) return;
@@ -20,8 +33,6 @@ export default function AboutTimeline() {
     const getScrollAmount = () => {
       return scrollSection.scrollWidth - window.innerWidth;
     };
-
-    const pinAmount = getScrollAmount();
 
     const anim = gsap.to(scrollSection, {
       x: () => -getScrollAmount(),
@@ -42,7 +53,7 @@ export default function AboutTimeline() {
       const trigger = ScrollTrigger.getById("about-timeline-trigger");
       if (trigger) trigger.kill();
     };
-  }, []);
+  }, [isMobile]);
 
   const milestones = [
     { year: "2013", key: "t2013", img: "/assets/video1/ezgif-frame-001.jpg" },
@@ -66,46 +77,91 @@ export default function AboutTimeline() {
         </h2>
       </div>
 
-      <div className="h-[75vh] flex items-center relative">
+      {isMobile ? (
+        /* Mobile: horizontal scroll with CSS scroll-snap */
         <div
-          ref={scrollSectionRef}
-          className="flex gap-8 px-6 md:px-12 py-12 absolute left-0 flex-nowrap"
-          style={{ width: "max-content" }}
+          className="overflow-x-auto py-12 px-6 -mx-0"
+          style={{ WebkitOverflowScrolling: "touch", scrollSnapType: "x mandatory" }}
         >
-          {milestones.map((m, idx) => {
-            const milestoneData = (t.about.timeline as any)[m.key];
-            const isEven = idx % 2 === 0;
+          <div className="flex gap-4 w-max">
+            {milestones.map((m, idx) => {
+              const milestoneData = (t.about.timeline as any)[m.key];
+              const isEven = idx % 2 === 0;
 
-            return (
-              <div
-                key={m.year}
-                className={`w-[280px] md:w-[360px] flex flex-col p-6 border border-brand-teak/20 select-none ${
-                  isEven ? "bg-[var(--bp-paper)] text-[var(--bp-ink)]" : "bg-surface-0 text-text-primary"
-                }`}
-              >
-                {/* Milestone Image */}
-                <div className="aspect-video w-full overflow-hidden mb-4 bg-surface-2 border border-brand-teak/10">
-                  <img
-                    src={m.img}
-                    alt={milestoneData?.title || m.year}
-                    className="w-full h-full object-cover grayscale-30 hover:grayscale-0 transition-all duration-500"
-                  />
+              return (
+                <div
+                  key={m.year}
+                  className={`w-[240px] sm:w-[280px] flex-shrink-0 flex flex-col p-6 border border-brand-teak/20 select-none ${
+                    isEven ? "bg-[var(--bp-paper)] text-[var(--bp-ink)]" : "bg-surface-0 text-text-primary"
+                  }`}
+                  style={{ scrollSnapAlign: "center" }}
+                >
+                  {/* Milestone Image */}
+                  <div className="aspect-video w-full overflow-hidden mb-4 bg-surface-2 border border-brand-teak/10">
+                    <img
+                      src={m.img}
+                      alt={milestoneData?.title || m.year}
+                      className="w-full h-full object-cover grayscale-30 hover:grayscale-0 transition-all duration-500"
+                    />
+                  </div>
+                  {/* Year Badge */}
+                  <span className="font-display text-3xl font-bold text-brand-teak mb-2 block">
+                    {m.year}
+                  </span>
+                  <h3 className="font-display text-lg font-semibold tracking-tight mb-2">
+                    {milestoneData?.title}
+                  </h3>
+                  <p className="font-ui text-xs leading-relaxed opacity-85">
+                    {milestoneData?.desc}
+                  </p>
                 </div>
-                {/* Year Badge */}
-                <span className="font-display text-3xl font-bold text-brand-teak mb-2 block">
-                  {m.year}
-                </span>
-                <h3 className="font-display text-lg font-semibold tracking-tight mb-2">
-                  {milestoneData?.title}
-                </h3>
-                <p className="font-ui text-xs leading-relaxed opacity-85">
-                  {milestoneData?.desc}
-                </p>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
-      </div>
+      ) : (
+        /* Desktop: GSAP horizontal scroll */
+        <div className="h-[75vh] flex items-center relative">
+          <div
+            ref={scrollSectionRef}
+            className="flex gap-8 px-6 md:px-12 py-12 absolute left-0 flex-nowrap"
+            style={{ width: "max-content" }}
+          >
+            {milestones.map((m, idx) => {
+              const milestoneData = (t.about.timeline as any)[m.key];
+              const isEven = idx % 2 === 0;
+
+              return (
+                <div
+                  key={m.year}
+                  className={`w-[240px] sm:w-[280px] md:w-[360px] flex flex-col p-6 border border-brand-teak/20 select-none ${
+                    isEven ? "bg-[var(--bp-paper)] text-[var(--bp-ink)]" : "bg-surface-0 text-text-primary"
+                  }`}
+                >
+                  {/* Milestone Image */}
+                  <div className="aspect-video w-full overflow-hidden mb-4 bg-surface-2 border border-brand-teak/10">
+                    <img
+                      src={m.img}
+                      alt={milestoneData?.title || m.year}
+                      className="w-full h-full object-cover grayscale-30 hover:grayscale-0 transition-all duration-500"
+                    />
+                  </div>
+                  {/* Year Badge */}
+                  <span className="font-display text-3xl font-bold text-brand-teak mb-2 block">
+                    {m.year}
+                  </span>
+                  <h3 className="font-display text-lg font-semibold tracking-tight mb-2">
+                    {milestoneData?.title}
+                  </h3>
+                  <p className="font-ui text-xs leading-relaxed opacity-85">
+                    {milestoneData?.desc}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -85,7 +85,7 @@ export default function ProcessPage() {
   return (
     <div className="relative w-full">
       {/* 1. Hero */}
-      <section className="relative h-[55vh] flex items-center justify-center overflow-hidden">
+      <section className="relative h-[40vh] md:h-[55vh] flex items-center justify-center overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: "url('/assets/process_hero.png')" }}
@@ -118,8 +118,8 @@ export default function ProcessPage() {
                   ref={(el) => {
                     if (el) phaseRefs.current[idx] = el;
                   }}
-                  className={`min-h-[70vh] flex flex-col justify-center text-left py-12 border-b border-border-subtle/50 last:border-b-0 transition-opacity duration-300 ${
-                    activePhase === p.id ? "opacity-100" : "opacity-40"
+                  className={`min-h-[50vh] lg:min-h-[70vh] flex flex-col justify-center text-left py-12 border-b border-b-border-subtle/50 last:border-b-0 transition-opacity duration-300 ${
+                    activePhase === p.id ? "opacity-100" : "opacity-100 lg:opacity-40"
                   }`}
                 >
                   <span className="font-display text-5xl font-bold text-brand-teak mb-2 block font-mono">
@@ -128,6 +128,15 @@ export default function ProcessPage() {
                   <span className="text-text-tertiary font-mono text-[10px] tracking-wider uppercase block mb-1">
                     Duration: {phaseData?.duration}
                   </span>
+                  {/* Inline Image for Mobile */}
+                  <div className="block lg:hidden w-full aspect-video overflow-hidden rounded bg-surface-2 border border-brand-teak/10 mb-6">
+                    <img
+                      src={p.img}
+                      alt={`Construction Phase ${p.id}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+
                   <h2 className="font-display text-2xl md:text-3xl font-semibold text-text-primary mb-6">
                     {phaseData?.name}
                   </h2>

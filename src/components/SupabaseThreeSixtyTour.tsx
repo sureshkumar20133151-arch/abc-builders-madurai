@@ -338,7 +338,8 @@ export default function SupabaseThreeSixtyTour({ token, initialMode }: SupabaseT
           box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
           transition: transform 0.2s ease-in-out, background-color 0.2s;
         }
-        .custom-nav-hotspot:hover {
+        .custom-nav-hotspot:hover,
+        .custom-nav-hotspot:active {
           transform: scale(1.15) rotate(15deg);
           background: rgba(74, 124, 111, 0.95);
         }
@@ -362,7 +363,8 @@ export default function SupabaseThreeSixtyTour({ token, initialMode }: SupabaseT
           box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
           transition: transform 0.2s ease-in-out, background-color 0.2s;
         }
-        .custom-info-hotspot:hover {
+        .custom-info-hotspot:hover,
+        .custom-info-hotspot:active {
           transform: scale(1.15) rotate(15deg);
           background: rgba(200, 146, 74, 0.95);
         }
@@ -480,7 +482,7 @@ export default function SupabaseThreeSixtyTour({ token, initialMode }: SupabaseT
       <div className="flex-1 h-full relative bg-black flex items-center justify-center">
         {/* Mobile Room Selector Dropdown */}
         {activeMode === "tour" && (
-          <div className="absolute top-4 left-4 z-20 md:hidden bg-brand-night/95 border border-brand-teak/30 rounded-lg px-3 py-2 shadow-lg backdrop-blur-md max-w-[200px]">
+          <div className="absolute top-4 left-4 z-20 md:hidden bg-brand-night/95 border border-brand-teak/30 rounded-lg px-3 py-2 shadow-lg backdrop-blur-md max-w-[240px]">
           <select
             value={activeRoomId || ""}
             onChange={(e) => {
@@ -508,7 +510,7 @@ export default function SupabaseThreeSixtyTour({ token, initialMode }: SupabaseT
 
         {/* Toggle Mode Tab Bar (Client) */}
         {project?.walkthrough_url && (project?.show_walkthrough ?? true) && rooms.some((r) => r.photo_url) && (project?.show_three_sixty ?? true) && (
-          <div className="absolute top-4 left-4 md:left-auto md:right-16 z-30 bg-brand-night/90 border border-brand-teak/30 rounded-lg p-1.5 shadow-lg backdrop-blur-md flex gap-1 select-none">
+          <div className="absolute bottom-4 left-4 md:bottom-auto md:top-4 md:left-auto md:right-16 z-30 bg-brand-night/90 border border-brand-teak/30 rounded-lg p-1.5 shadow-lg backdrop-blur-md flex gap-1 select-none">
             <button
               onClick={() => setActiveMode("tour")}
               className={`px-3 py-1 rounded text-xs font-semibold transition-all cursor-pointer ${
@@ -533,12 +535,20 @@ export default function SupabaseThreeSixtyTour({ token, initialMode }: SupabaseT
         )}
 
         {activeMode === "walkthrough" && project ? (
-          <iframe
-            src={`/playcanvas-viewer.html?content=${encodeURIComponent(project.walkthrough_url || "")}&noui&v=1${project.walkthrough_rotation ? `&sceneRotation=${encodeURIComponent(project.walkthrough_rotation)}` : ''}${project.walkthrough_cam_position ? `&cameraPosition=${encodeURIComponent(project.walkthrough_cam_position)}` : ''}${project.walkthrough_cam_lookat ? `&cameraLookAt=${encodeURIComponent(project.walkthrough_cam_lookat)}` : ''}`}
-            className="absolute inset-0 w-full h-full border-0 z-10"
-            title="3D Walkthrough"
-            allow="xr-spatial-tracking; clipboard-write; gamepad"
-          />
+          <>
+            <iframe
+              src={`/playcanvas-viewer.html?content=${encodeURIComponent(project.walkthrough_url || "")}&noui&v=1${project.walkthrough_rotation ? `&sceneRotation=${encodeURIComponent(project.walkthrough_rotation)}` : ''}${project.walkthrough_cam_position ? `&cameraPosition=${encodeURIComponent(project.walkthrough_cam_position)}` : ''}${project.walkthrough_cam_lookat ? `&cameraLookAt=${encodeURIComponent(project.walkthrough_cam_lookat)}` : ''}`}
+              className="absolute inset-0 w-full h-full border-0 z-10"
+              title="3D Walkthrough"
+              allow="xr-spatial-tracking; clipboard-write; gamepad"
+            />
+            {/* Mobile walkthrough instructions (visible only on mobile, auto-hides) */}
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 md:hidden bg-brand-night/90 border border-brand-teak/30 rounded-lg px-4 py-2 shadow-lg backdrop-blur-md text-center animate-pulse pointer-events-none">
+              <span className="text-[10px] text-white/70 font-mono uppercase tracking-wider">
+                {locale === "ta" ? "சுழற்ற: இழுக்கவும் | நகர: 2 விரல்" : "Drag to look · Pinch to zoom"}
+              </span>
+            </div>
+          </>
         ) : (
           <>
             {!pannellumReady && (
@@ -556,7 +566,7 @@ export default function SupabaseThreeSixtyTour({ token, initialMode }: SupabaseT
         )}
 
         {/* Current Room Indicator Label */}
-        <div className="absolute bottom-4 left-4 bg-brand-night/85 border border-brand-teak/30 px-4 py-2 rounded-lg text-xs font-semibold backdrop-blur-md z-10 select-none shadow-md">
+        <div className="absolute bottom-20 left-4 md:bottom-4 md:left-4 bg-brand-night/85 border border-brand-teak/30 px-4 py-2 rounded-lg text-xs font-semibold backdrop-blur-md z-10 select-none shadow-md">
           {activeRoom.room_name}
         </div>
 
@@ -591,7 +601,7 @@ export default function SupabaseThreeSixtyTour({ token, initialMode }: SupabaseT
 
         {/* Minimap Overlay Panel */}
         {showMinimap && project?.floorplan_url && (
-          <div className="absolute top-16 right-4 w-[280px] bg-brand-night/95 border border-brand-teak/30 rounded-xl p-3 shadow-2xl backdrop-blur-md z-20 flex flex-col font-ui select-none animate-[fadeIn_0.2s_ease-out]">
+          <div className="absolute top-16 right-4 w-[calc(100%-2rem)] max-w-[280px] sm:w-[280px] bg-brand-night/95 border border-brand-teak/30 rounded-xl p-3 shadow-2xl backdrop-blur-md z-20 flex flex-col font-ui select-none animate-[fadeIn_0.2s_ease-out]">
             <div className="flex justify-between items-center text-[10px] uppercase font-bold tracking-widest text-brand-teak mb-2 border-b border-brand-teak/10 pb-1">
               <span>{locale === "ta" ? "மனை வரைபடம்" : "Floor Plan"}</span>
               <div className="flex gap-2">
@@ -629,19 +639,21 @@ export default function SupabaseThreeSixtyTour({ token, initialMode }: SupabaseT
                     key={room.id}
                     onClick={() => handleRoomChange(room)}
                     disabled={!room.photo_url}
-                    className={`absolute w-3.5 h-3.5 rounded-full border-2 border-white translate-x-[-50%] translate-y-[-50%] cursor-pointer shadow transition-transform hover:scale-125 ${
-                      activeRoomId === room.id
-                        ? "bg-brand-teak animate-ping scale-110"
-                        : room.photo_url
-                        ? "bg-brand-teal"
-                        : "bg-gray-600 border-gray-400 cursor-not-allowed opacity-50"
-                    }`}
+                    className="absolute translate-x-[-50%] translate-y-[-50%] p-[10px] cursor-pointer group"
                     style={{
                       left: `${room.floorplan_x}%`,
                       top: `${room.floorplan_y}%`
                     }}
                     title={room.room_name}
-                  />
+                  >
+                    <span className={`block w-3 h-3 rounded-full border-2 border-white shadow transition-transform group-hover:scale-125 group-active:scale-125 ${
+                      activeRoomId === room.id
+                        ? "bg-brand-teak animate-ping scale-110"
+                        : room.photo_url
+                        ? "bg-brand-teal"
+                        : "bg-gray-600 border-gray-400 cursor-not-allowed opacity-50"
+                    }`} />
+                  </button>
                 ))}
             </div>
             <div className="text-[8px] text-white/40 text-center mt-2 font-mono uppercase tracking-widest">

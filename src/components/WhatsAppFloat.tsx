@@ -30,7 +30,7 @@ export default function WhatsAppFloat() {
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(messageText)}`;
 
   return (
-    <div className="fixed bottom-6 right-6 z-40 group select-none flex items-center gap-3">
+    <div className="fixed bottom-20 sm:bottom-6 right-6 z-40 group select-none flex items-center gap-3">
       {/* Tooltip message */}
       <div className="bg-surface-0 border border-border-subtle shadow-md px-3 py-1.5 rounded-lg text-[10px] font-ui uppercase tracking-wider text-text-secondary opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none hidden md:block">
         {locale === "ta" ? "எங்களுடன் வாட்ஸ்அப்பில் உரையாடுங்கள்" : "Chat with us — replies in under 2 hrs"}

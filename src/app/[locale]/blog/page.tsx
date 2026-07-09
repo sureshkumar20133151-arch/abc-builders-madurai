@@ -299,7 +299,7 @@ Recommendation: For outer walls, wire-cut clay red bricks are premium. For inter
                         e.stopPropagation();
                         handleShareWa(art);
                       }}
-                      className="p-1.5 hover:bg-brand-teak/10 rounded text-brand-teak transition-colors cursor-pointer"
+                      className="p-2.5 hover:bg-brand-teak/10 rounded text-brand-teak transition-colors cursor-pointer"
                       title={t.blog.shareWa}
                     >
                       <Share2 className="w-4 h-4" />

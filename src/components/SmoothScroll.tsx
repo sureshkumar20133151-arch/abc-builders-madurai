@@ -4,6 +4,10 @@ import Lenis from "lenis";
 
 export default function SmoothScroll() {
   useEffect(() => {
+    // Skip Lenis on touch devices — prevents iOS Safari rubber-banding and scroll jank
+    const isTouch = window.matchMedia('(pointer: coarse)').matches;
+    if (isTouch) return; // Use native scroll on touch devices
+
     const lenis = new Lenis({
       duration: 1.4,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // smooth exponential ease

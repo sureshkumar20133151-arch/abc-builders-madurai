@@ -255,7 +255,7 @@ Please contact me for site verification.`;
   return (
     <div className="relative w-full">
       {/* 1. Hero Header */}
-      <section className="relative h-[55vh] flex items-center justify-center overflow-hidden">
+      <section className="relative h-[40vh] md:h-[55vh] flex items-center justify-center overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: "url('/assets/video2/ezgif-frame-090.jpg')" }}
@@ -371,6 +371,10 @@ Please contact me for site verification.`;
             Construction Grades (2026 rate/sqft)
           </h2>
 
+          {/* Scroll hint indicator for mobile */}
+          <div className="block lg:hidden text-center text-text-secondary text-[11px] font-ui uppercase tracking-wider mb-2 animate-pulse">
+            Swipe left to view full table ↔
+          </div>
           <div className="max-w-5xl mx-auto overflow-x-auto">
             <table className="w-full text-left font-ui border-collapse min-w-[600px]">
               <thead>
@@ -461,19 +465,19 @@ Please contact me for site verification.`;
                   <div className="flex gap-2">
                     <button
                       onClick={() => setUnitType("sqft")}
-                      className={`px-2 py-0.5 rounded text-[10px] ${unitType === "sqft" ? "bg-[var(--bp-ink)] text-white" : "border border-[var(--bp-ink)]/30"}`}
+                      className={`px-3 py-1.5 rounded text-xs transition-colors ${unitType === "sqft" ? "bg-[var(--bp-ink)] text-white" : "border border-[var(--bp-ink)]/30 hover:bg-[var(--bp-ink)]/5"}`}
                     >
                       Sq.Ft
                     </button>
                     <button
                       onClick={() => setUnitType("cents")}
-                      className={`px-2 py-0.5 rounded text-[10px] ${unitType === "cents" ? "bg-[var(--bp-ink)] text-white" : "border border-[var(--bp-ink)]/30"}`}
+                      className={`px-3 py-1.5 rounded text-xs transition-colors ${unitType === "cents" ? "bg-[var(--bp-ink)] text-white" : "border border-[var(--bp-ink)]/30 hover:bg-[var(--bp-ink)]/5"}`}
                     >
                       Cents
                     </button>
                     <button
                       onClick={() => setUnitType("grounds")}
-                      className={`px-2 py-0.5 rounded text-[10px] ${unitType === "grounds" ? "bg-[var(--bp-ink)] text-white" : "border border-[var(--bp-ink)]/30"}`}
+                      className={`px-3 py-1.5 rounded text-xs transition-colors ${unitType === "grounds" ? "bg-[var(--bp-ink)] text-white" : "border border-[var(--bp-ink)]/30 hover:bg-[var(--bp-ink)]/5"}`}
                     >
                       Grounds
                     </button>

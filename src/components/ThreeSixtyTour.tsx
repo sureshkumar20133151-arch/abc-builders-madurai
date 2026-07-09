@@ -352,7 +352,8 @@ export default function ThreeSixtyTour() {
           box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
           transition: transform 0.2s ease-in-out, background-color 0.2s;
         }
-        .custom-nav-hotspot:hover {
+        .custom-nav-hotspot:hover,
+        .custom-nav-hotspot:active {
           transform: scale(1.15) rotate(15deg);
           background: rgba(74, 124, 111, 0.95);
         }
@@ -376,7 +377,8 @@ export default function ThreeSixtyTour() {
           box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
           transition: transform 0.2s ease-in-out, background-color 0.2s;
         }
-        .custom-info-hotspot:hover {
+        .custom-info-hotspot:hover,
+        .custom-info-hotspot:active {
           transform: scale(1.15) rotate(15deg);
           background: rgba(200, 146, 74, 0.95);
         }
@@ -466,7 +468,7 @@ export default function ThreeSixtyTour() {
       {/* Main Panoramic Viewer Canvas (Flex-1) */}
       <div className="flex-1 h-full relative bg-black flex items-center justify-center">
         {/* Mobile Room Selector Dropdown */}
-        <div className="absolute top-4 left-4 z-20 md:hidden bg-brand-night/95 border border-brand-teak/30 rounded-lg px-3 py-2 shadow-lg backdrop-blur-md max-w-[200px]">
+        <div className="absolute top-4 left-4 z-20 md:hidden bg-brand-night/95 border border-brand-teak/30 rounded-lg px-3 py-2 shadow-lg backdrop-blur-md max-w-[240px]">
           <select
             value={activeRoomId}
             onChange={(e) => handleRoomChange(e.target.value)}
@@ -533,7 +535,7 @@ export default function ThreeSixtyTour() {
 
         {/* Minimap Overlay Panel */}
         {showMinimap && (
-          <div className="absolute top-16 right-4 w-[280px] bg-brand-night/95 border border-brand-teak/30 rounded-xl p-3 shadow-2xl backdrop-blur-md z-20 flex flex-col font-ui select-none animate-[fadeIn_0.2s_ease-out]">
+          <div className="absolute top-16 right-4 w-[calc(100%-2rem)] max-w-[280px] sm:w-[280px] bg-brand-night/95 border border-brand-teak/30 rounded-xl p-3 shadow-2xl backdrop-blur-md z-20 flex flex-col font-ui select-none animate-[fadeIn_0.2s_ease-out]">
             <div className="flex justify-between items-center text-[10px] uppercase font-bold tracking-widest text-brand-teak mb-2 border-b border-brand-teak/10 pb-1">
               <span>{locale === "ta" ? "மனை வரைபடம்" : "Floor Plan"}</span>
               <div className="flex gap-2">
@@ -570,17 +572,19 @@ export default function ThreeSixtyTour() {
                   <button
                     key={room.id}
                     onClick={() => handleRoomChange(room.id)}
-                    className={`absolute w-3.5 h-3.5 rounded-full border-2 border-white translate-x-[-50%] translate-y-[-50%] cursor-pointer shadow transition-transform hover:scale-125 ${
-                      activeRoomId === room.id
-                        ? "bg-brand-teak animate-ping scale-110"
-                        : "bg-brand-teal"
-                    }`}
+                    className="absolute translate-x-[-50%] translate-y-[-50%] p-[10px] cursor-pointer group"
                     style={{
                       left: `${room.floorplanX}%`,
                       top: `${room.floorplanY}%`
                     }}
                     title={room.name}
-                  />
+                  >
+                    <span className={`block w-3 h-3 rounded-full border-2 border-white shadow transition-transform group-hover:scale-125 group-active:scale-125 ${
+                      activeRoomId === room.id
+                        ? "bg-brand-teak animate-ping scale-110"
+                        : "bg-brand-teal"
+                    }`} />
+                  </button>
                 ))}
             </div>
             <div className="text-[8px] text-white/40 text-center mt-2 font-mono uppercase tracking-widest">
