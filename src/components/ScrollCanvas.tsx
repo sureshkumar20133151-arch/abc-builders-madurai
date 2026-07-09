@@ -151,24 +151,34 @@ export default function ScrollCanvas() {
 
         ctx.save();
         ctx.filter = "blur(12px)";
-        // Left margin stretch: 3px vertical strip from the left edge of the current image
+        // Left margin stretch (overlaps 30px under the building to hide blur edge artifacts)
         ctx.drawImage(
           img,
           0, 0, 3, imgHeight,
-          0, 0, offsetX, canvasHeight
+          0, 0, offsetX + 30, canvasHeight
         );
-        // Right margin stretch: 3px vertical strip from the right edge of the current image
+        // Right margin stretch (overlaps 30px under the building to hide blur edge artifacts)
         ctx.drawImage(
           img,
           imgWidth - 3, 0, 3, imgHeight,
-          offsetX + targetWidth, 0, canvasWidth - (offsetX + targetWidth), canvasHeight
+          offsetX + targetWidth - 30, 0, canvasWidth - (offsetX + targetWidth) + 30, canvasHeight
         );
         ctx.restore();
 
-        // Dark overlay on the stretched sides to blend softly
-        ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
-        ctx.fillRect(0, 0, offsetX, canvasHeight);
-        ctx.fillRect(offsetX + targetWidth, 0, canvasWidth - (offsetX + targetWidth), canvasHeight);
+        // Soft linear gradient shadow overlays for smooth, feather-like transitions
+        const leftGrad = ctx.createLinearGradient(0, 0, offsetX + 40, 0);
+        leftGrad.addColorStop(0, "rgba(0, 0, 0, 0.55)");
+        leftGrad.addColorStop(0.7, "rgba(0, 0, 0, 0.4)");
+        leftGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
+        ctx.fillStyle = leftGrad;
+        ctx.fillRect(0, 0, offsetX + 40, canvasHeight);
+
+        const rightGrad = ctx.createLinearGradient(offsetX + targetWidth - 40, 0, canvasWidth, 0);
+        rightGrad.addColorStop(0, "rgba(0, 0, 0, 0)");
+        rightGrad.addColorStop(0.3, "rgba(0, 0, 0, 0.4)");
+        rightGrad.addColorStop(1, "rgba(0, 0, 0, 0.55)");
+        ctx.fillStyle = rightGrad;
+        ctx.fillRect(offsetX + targetWidth - 40, 0, canvasWidth - (offsetX + targetWidth) + 40, canvasHeight);
 
         // Draw centered crisp building on top (100% height)
         ctx.drawImage(img, offsetX, offsetY, targetWidth, targetHeight);
@@ -181,24 +191,34 @@ export default function ScrollCanvas() {
 
         ctx.save();
         ctx.filter = "blur(12px)";
-        // Top margin stretch: 3px horizontal strip from the top edge of the current image
+        // Top margin stretch (overlaps 30px under the building to hide blur edge artifacts)
         ctx.drawImage(
           img,
           0, 0, imgWidth, 3,
-          offsetX, 0, targetWidth, offsetY
+          offsetX, 0, targetWidth, offsetY + 30
         );
-        // Bottom margin stretch: 3px horizontal strip from the bottom edge of the current image
+        // Bottom margin stretch (overlaps 30px under the building to hide blur edge artifacts)
         ctx.drawImage(
           img,
           0, imgHeight - 3, imgWidth, 3,
-          offsetX, offsetY + targetHeight, targetWidth, canvasHeight - (offsetY + targetHeight)
+          offsetX, offsetY + targetHeight - 30, targetWidth, canvasHeight - (offsetY + targetHeight) + 30
         );
         ctx.restore();
 
-        // Dark overlay on the stretched top/bottom padding to blend softly
-        ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
-        ctx.fillRect(0, 0, canvasWidth, offsetY);
-        ctx.fillRect(0, offsetY + targetHeight, canvasWidth, canvasHeight - (offsetY + targetHeight));
+        // Soft linear gradient shadow overlays for smooth, feather-like transitions
+        const topGrad = ctx.createLinearGradient(0, 0, 0, offsetY + 40);
+        topGrad.addColorStop(0, "rgba(0, 0, 0, 0.55)");
+        topGrad.addColorStop(0.7, "rgba(0, 0, 0, 0.4)");
+        topGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
+        ctx.fillStyle = topGrad;
+        ctx.fillRect(0, 0, canvasWidth, offsetY + 40);
+
+        const bottomGrad = ctx.createLinearGradient(0, offsetY + targetHeight - 40, 0, canvasHeight);
+        bottomGrad.addColorStop(0, "rgba(0, 0, 0, 0)");
+        bottomGrad.addColorStop(0.3, "rgba(0, 0, 0, 0.4)");
+        bottomGrad.addColorStop(1, "rgba(0, 0, 0, 0.55)");
+        ctx.fillStyle = bottomGrad;
+        ctx.fillRect(0, offsetY + targetHeight - 40, canvasWidth, canvasHeight - (offsetY + targetHeight) + 40);
 
         // Draw centered crisp building on top (covering full width, centering vertically)
         ctx.drawImage(img, offsetX, offsetY, targetWidth, targetHeight);
